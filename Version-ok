@@ -157,12 +157,15 @@
   .hsk2__audioPlay:active { transform: translateY(0); }
   .hsk2__audioPlayIcon { width: 24px; height: 24px; display:block; color:inherit; }
   .hsk2__audioWave {
-    flex: 1 1 auto; position: relative; min-height: 78px; overflow:hidden;
+    flex: 1 1 auto; position: relative; min-height: 90px; overflow:hidden;
     display:flex; align-items:center; cursor: pointer;
+    width: 100%;
+    --hsk2-wave-width: 2px;
+    --hsk2-wave-gap: 1px;
   }
-  .hsk2__audioLines { position: relative; z-index: 1; display:flex; align-items:center; gap: 3px; width: 100%; height: 100%; }
+  .hsk2__audioLines { position: relative; z-index: 1; display:flex; align-items:center; gap: var(--hsk2-wave-gap); width: 100%; height: 100%; }
   .hsk2__audioLine {
-    width: 3px; border-radius: 999px; background:#d3d6de; transition: background .2s ease, box-shadow .2s ease, filter .2s ease;
+    width: var(--hsk2-wave-width); border-radius: 999px; background:#d3d6de; transition: background .2s ease, box-shadow .2s ease, filter .2s ease;
   }
   .hsk2__audioLine.is-filled {
     background: #f97316;
@@ -171,6 +174,81 @@
   }
   .hsk2__audioTime { min-width: 120px; text-align:right; color:#6b7280; font-size: 13px; font-variant-numeric: tabular-nums; }
   .hsk2__audioMeta { color:#6b7280; font-size: 13px; padding-left: 2px; }
+
+  .hsk2__videoEmbed { margin-top: 12px; }
+  .hsk2__videoFrame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 14px;
+    border: 1px solid #eef0f6;
+    overflow: hidden;
+    background: #0b0b0f;
+  }
+  .hsk2__videoFrame iframe,
+  .hsk2__videoFrame video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    z-index: 0;
+  }
+  .hsk2__videoPlaceholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.95));
+    z-index: 1;
+  }
+  .hsk2__videoPoster {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: saturate(1.05);
+    transform: scale(1.02);
+  }
+  .hsk2__videoPlaceholder.is-empty .hsk2__videoPoster {
+    display: none;
+  }
+  .hsk2__videoShade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.15), rgba(2, 6, 23, 0.6));
+  }
+  .hsk2__videoPlay {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(15, 23, 42, 0.72);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.45);
+    font-weight: 500;
+    transition: transform .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .hsk2__videoPlaceholder:hover .hsk2__videoPlay {
+    transform: translateY(-1px);
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  .hsk2__videoPlayIcon {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+  }
+  .hsk2__videoPlayIcon svg {
+    width: 100%;
+    height: 100%;
+  }
 
   .hsk2__choices { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
   .hsk2__choices--single { margin-top: 0; grid-template-columns: 1fr; }
@@ -386,7 +464,12 @@
     .hsk2__row { width: 100%; }
 
     .hsk2__audioPlayer { flex-direction: column; align-items: flex-start; width: 100%; gap: 10px; }
-    .hsk2__audioWave { width: 100%; min-height: 88px; }
+    .hsk2__audioWave {
+      width: 100%;
+      min-height: 72px;
+      --hsk2-wave-width: 2px;
+      --hsk2-wave-gap: 1px;
+    }
     .hsk2__audioTime { width: 100%; text-align: left; }
 
     .hsk2__choices, .hsk2__matchGrid { grid-template-columns: 1fr; }
@@ -602,9 +685,10 @@ const ASSETS = {
     china: "https://i.pinimg.com/originals/c6/56/3a/c6563a0ed1dde4a3ff8957f49dbb9fc4.jpg"
   },
   // Public placeholder video (optional). Replace with your own mp4 link.
-    video: {
+  video: {
     intro: "https://static.tildacdn.com/vide6631-3137-4330-a338-656639363931/Chinachild.mp4",
-    introEmbed: `<div style="position: relative; overflow: hidden; aspect-ratio: 1920/1080"><iframe src="https://share.synthesia.io/embeds/videos/d8f3064d-bdc9-4c7e-9684-94353ad0d8c1" loading="lazy" title="Synthesia video player - HSK2" allowfullscreen allow="encrypted-media; fullscreen; microphone;" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0; margin: 0; overflow:hidden;"></iframe></div>`
+    introEmbedUrl: "https://share.synthesia.io/embeds/videos/d8f3064d-bdc9-4c7e-9684-94353ad0d8c1",
+    introPreviewUrl: "https://static.tildacdn.com/tild6631-3137-4330-a338-656639363931/Chinachild_preview.jpg"
   }
 };
 
@@ -851,6 +935,8 @@ const STATE = {
 };
 
 const OPEN_DROPDOWNS = new Set();
+const WAVEFORMS = [];
+let waveformResizeBound = false;
 
 function el(tag, cls, html){
   const n = document.createElement(tag);
@@ -876,6 +962,182 @@ function formatTime(sec){
   const m = Math.floor(sec / 60);
   const s = Math.floor(sec % 60);
   return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
+
+function debounce(fn, wait){
+  let t;
+  return (...args)=>{
+    clearTimeout(t);
+    t = setTimeout(()=>fn(...args), wait);
+  };
+}
+
+function sampleHeights(source, count){
+  if(count <= 0) return [];
+  if(count >= source.length) return source.slice();
+  const result = [];
+  for(let i=0;i<count;i++){
+    const idx = Math.round((i / (count - 1)) * (source.length - 1));
+    result.push(source[idx]);
+  }
+  return result;
+}
+
+function renderWaveformBars(wave, linesWrap, heights){
+  linesWrap.innerHTML = "";
+  const styles = getComputedStyle(wave);
+  const barWidth = parseFloat(styles.getPropertyValue("--hsk2-wave-width")) || 4;
+  const barGap = parseFloat(styles.getPropertyValue("--hsk2-wave-gap")) || 4;
+  const available = wave.clientWidth || 1;
+  const count = Math.max(12, Math.floor((available + barGap) / (barWidth + barGap)));
+  const sampled = sampleHeights(heights, count);
+  const maxSource = Math.max(...sampled);
+  const maxHeight = Math.max(56, wave.clientHeight - 8);
+  const scale = maxSource ? (maxHeight / maxSource) : 1;
+  return sampled.map(h=>{
+    const line = el("div","hsk2__audioLine");
+    line.style.height = `${Math.max(6, Math.round(h * scale))}px`;
+    linesWrap.appendChild(line);
+    return line;
+  });
+}
+
+function refreshWaveforms(){
+  WAVEFORMS.forEach(waveform=>{
+    waveform.onUpdate();
+  });
+}
+
+function bindWaveformResize(){
+  if(waveformResizeBound) return;
+  waveformResizeBound = true;
+  const handler = debounce(refreshWaveforms, 120);
+  window.addEventListener("resize", handler);
+  window.addEventListener("orientationchange", ()=>setTimeout(refreshWaveforms, 200));
+}
+
+function addVideoPreconnect(embedUrl){
+  if(!embedUrl) return;
+  let origin = "";
+  try {
+    origin = new URL(embedUrl).origin;
+  } catch (err){
+    return;
+  }
+  if(!origin) return;
+  if(document.querySelector(`link[data-hsk2-preconnect="${origin}"]`)) return;
+  const dns = document.createElement("link");
+  dns.rel = "dns-prefetch";
+  dns.href = origin;
+  dns.dataset.hsk2Preconnect = origin;
+  const pre = document.createElement("link");
+  pre.rel = "preconnect";
+  pre.href = origin;
+  pre.crossOrigin = "";
+  pre.dataset.hsk2Preconnect = origin;
+  document.head.appendChild(dns);
+  document.head.appendChild(pre);
+}
+
+function loadVideoEmbed(placeholder){
+  if(!placeholder || placeholder.dataset.loaded === "1") return;
+  const embedUrl = placeholder.dataset.embedUrl || "";
+  const previewUrl = placeholder.dataset.previewUrl || "";
+  if(!embedUrl) return;
+  placeholder.dataset.loaded = "1";
+  addVideoPreconnect(embedUrl);
+  const frame = placeholder.closest(".hsk2__videoFrame");
+  if(!frame) return;
+  const isMp4 = /\.mp4(\?|$)/i.test(embedUrl);
+  if(isMp4){
+    const video = document.createElement("video");
+    video.controls = true;
+    video.preload = "metadata";
+    video.src = embedUrl;
+    if(previewUrl){
+      video.poster = previewUrl;
+    }
+    frame.appendChild(video);
+    const removePlaceholder = ()=>{
+      if(placeholder.isConnected){
+        placeholder.remove();
+      }
+      video.removeEventListener("loadedmetadata", removePlaceholder);
+    };
+    video.addEventListener("loadedmetadata", removePlaceholder);
+    return;
+  }
+  const iframe = document.createElement("iframe");
+  iframe.src = embedUrl;
+  iframe.title = "HSK2 video";
+  iframe.allowFullscreen = true;
+  iframe.allow = "encrypted-media; fullscreen; microphone;";
+  frame.appendChild(iframe);
+  iframe.addEventListener("load", ()=>{
+    if(placeholder.isConnected){
+      placeholder.remove();
+    }
+  });
+}
+
+function initLazyVideoEmbeds(){
+  const placeholders = Array.from(document.querySelectorAll(".hsk2__videoPlaceholder"));
+  if(!placeholders.length) return;
+  placeholders.forEach(placeholder=>{
+    if(!placeholder.dataset.previewUrl){
+      placeholder.classList.add("is-empty");
+    }
+    placeholder.addEventListener("click", ()=>loadVideoEmbed(placeholder));
+    placeholder.addEventListener("keydown", (evt)=>{
+      if(evt.key === "Enter" || evt.key === " "){
+        evt.preventDefault();
+        loadVideoEmbed(placeholder);
+      }
+    });
+  });
+  if("IntersectionObserver" in window){
+    const observer = new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          const embedUrl = entry.target.dataset.embedUrl || "";
+          addVideoPreconnect(embedUrl);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: "600px" });
+    placeholders.forEach(node=>observer.observe(node));
+  }
+}
+
+function buildIntroVideoHtml(video){
+  if(!video) return "";
+  const embedUrl = typeof video.introEmbedUrl === "string" ? video.introEmbedUrl.trim() : "";
+  const previewUrl = typeof video.introPreviewUrl === "string" ? video.introPreviewUrl.trim() : "";
+  if(embedUrl){
+    const posterStyle = previewUrl ? ` style="background-image: url('${previewUrl}');"` : "";
+    const emptyClass = previewUrl ? "" : " is-empty";
+    return `
+      <div class="hsk2__videoEmbed">
+        <div class="hsk2__videoFrame">
+          <div class="hsk2__videoPlaceholder${emptyClass}" data-embed-url="${embedUrl}" data-preview-url="${previewUrl}" role="button" tabindex="0" aria-label="Загрузить видео">
+            <div class="hsk2__videoPoster"${posterStyle}></div>
+            <div class="hsk2__videoShade"></div>
+            <div class="hsk2__videoPlay">
+              <span class="hsk2__videoPlayIcon">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M28.6 14.614a1.6 1.6 0 010 2.772L9.4 28.47A1.6 1.6 0 017 27.085V4.915a1.6 1.6 0 012.4-1.386l19.2 11.085z"/></svg>
+              </span>
+              <span>Смотреть видео</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+  if(video.intro){
+    return `<video controls preload="metadata" style="width:100%; border-radius:14px; border:1px solid #eef0f6;">
+      <source src="${video.intro}" type="video/mp4">
+    </video>`;
+  }
+  return "";
 }
 
 function createDropdown(options, placeholder, value, onChange){
@@ -958,6 +1220,7 @@ function render(){
   const content = document.getElementById("content");
   nav.innerHTML = "";
   content.innerHTML = "";
+  WAVEFORMS.length = 0;
 
   nav.appendChild(el("div","hsk2__navTitle","Разделы"));
 
@@ -975,35 +1238,8 @@ function render(){
     nav.appendChild(item);
   });
 
-  function buildIntroVideoHtml(video){
-    if(!video) return "";
-    const embedRaw = typeof video.introEmbed === "string" ? video.introEmbed.trim() : "";
-    const embedUrl = typeof video.introEmbedUrl === "string" ? video.introEmbedUrl.trim() : "";
-    if(embedRaw){
-      if(/^https?:\/\//i.test(embedRaw)){
-        return `<div class="hsk2__videoEmbed"><div class="hsk2__videoFrame"><iframe src="${embedRaw}" loading="lazy" title="HSK2 video" allowfullscreen allow="encrypted-media; fullscreen; microphone;"></iframe></div></div>`;
-      }
-      return `<div class="hsk2__videoEmbed">${embedRaw}</div>`;
-    }
-    if(embedUrl){
-      return `<div class="hsk2__videoEmbed"><div class="hsk2__videoFrame"><iframe src="${embedUrl}" loading="lazy" title="HSK2 video" allowfullscreen allow="encrypted-media; fullscreen; microphone;"></iframe></div></div>`;
-    }
-    if(video.intro){
-      return `<video controls preload="metadata" style="width:100%; border-radius:14px; border:1px solid #eef0f6;">
-        <source src="${video.intro}" type="video/mp4">
-      </video>`;
-    }
-    return "";
-  }
-
   // optional: intro video card
-  const introVideoHtml = (ASSETS.video?.introEmbed && ASSETS.video.introEmbed.trim())
-    ? `<div class="hsk2__videoEmbed">${ASSETS.video.introEmbed}</div>`
-    : (ASSETS.video?.intro
-      ? `<video controls preload="metadata" style="width:100%; border-radius:14px; border:1px solid #eef0f6;">
-          <source src="${ASSETS.video.intro}" type="video/mp4">
-        </video>`
-      : "");
+  const introVideoHtml = buildIntroVideoHtml(ASSETS.video);
   const intro = el("div","hsk2__card");
   intro.innerHTML = `
     <div class="hsk2__cardHead">
@@ -1035,6 +1271,9 @@ function render(){
 
   wireFinish();
   updateProgressUI();
+  bindWaveformResize();
+  refreshWaveforms();
+  initLazyVideoEmbeds();
 }
 
 function renderItem(sec, item){
@@ -1079,11 +1318,15 @@ function renderListeningChoice(item){
   const wave = el("div","hsk2__audioWave");
   const linesWrap = el("div","hsk2__audioLines");
   const lineHeights = [6,10,32,6,34,45,17,34,12,22,16,23,26,6,57,21,14,50,21,8,41,14,6,19,24,7,48,61,7,7,47,8,22,39,29,23,41,9,11,44,13,9,50,20,6,40,34,7,38,51,16,6,24,20,15,41,32,19,41,41,16,8,35,8,31,21,6,29,30,6,17,60,14,22,36,21,18,32,14,16,63,29];
-  const lineEls = lineHeights.map(h=>{
-    const line = el("div","hsk2__audioLine");
-    line.style.height = `${h}px`;
-    linesWrap.appendChild(line);
-    return line;
+  let lineEls = renderWaveformBars(wave, linesWrap, lineHeights);
+  WAVEFORMS.push({
+    wave,
+    linesWrap,
+    heights: lineHeights,
+    onUpdate: ()=>{
+      lineEls = renderWaveformBars(wave, linesWrap, lineHeights);
+      syncAudioUI();
+    }
   });
   wave.appendChild(linesWrap);
 
