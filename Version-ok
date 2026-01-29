@@ -1097,8 +1097,20 @@ function initLazyVideoEmbeds(){
 
 function buildIntroVideoHtml(video){
   if(!video) return "";
+  const embedRaw = typeof video.introEmbed === "string" ? video.introEmbed.trim() : "";
   const embedUrl = typeof video.introEmbedUrl === "string" ? video.introEmbedUrl.trim() : "";
   const previewUrl = typeof video.introPreviewUrl === "string" ? video.introPreviewUrl.trim() : "";
+  if(embedRaw){
+    if(/^https?:\/\//i.test(embedRaw)){
+      return `
+        <div class="hsk2__videoEmbed">
+          <div class="hsk2__videoFrame">
+            <iframe src="${embedRaw}" loading="lazy" title="HQC1 video" allowfullscreen allow="encrypted-media; fullscreen; microphone;"></iframe>
+          </div>
+        </div>`;
+    }
+    return `<div class="hsk2__videoEmbed">${embedRaw}</div>`;
+  }
   if(embedUrl){
     const posterStyle = previewUrl ? ` style="background-image: url('${previewUrl}');"` : "";
     const emptyClass = previewUrl ? "" : " is-empty";
