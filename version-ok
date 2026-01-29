@@ -1,0 +1,2029 @@
+<div id="hsk1-root" class="hsk1">
+  <div class="hsk1__shell">
+    <header class="hsk1__head">
+      <div class="hsk1__brand">
+        <div class="hsk1__logo">HSK1</div>
+        <div class="hsk1__meta">
+          <div class="hsk1__title">Интерактивный диагностический тест</div>
+          <div class="hsk1__subtitle">Аудирование, чтение и грамматика</div>
+        </div>
+      </div>
+
+      <div class="hsk1__status">
+        <div class="hsk1__progress">
+          <div class="hsk1__progressBar"><div class="hsk1__progressFill" id="progressFill"></div></div>
+          <div class="hsk1__progressText"><span id="progressText">0%</span></div>
+        </div>
+        <button class="hsk1__btn hsk1__btn--primary" id="finishBtn" type="button">Завершить</button>
+      </div>
+    </header>
+
+    <main class="hsk1__main">
+      <aside class="hsk1__nav" id="nav"></aside>
+      <section class="hsk1__content" id="content"></section>
+    </main>
+
+    <footer class="hsk1__foot">
+      <div class="hsk1__hint">
+        Подсказка: на телефоне можно не перетаскивать — нажмите слово/карточку, затем нажмите слот/цель.
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ===== MODAL (RESULT) ===== -->
+<div class="hsk1__modalWrap" id="hsk1Modal" aria-hidden="true">
+  <div class="hsk1__modalBackdrop" data-close-modal="1"></div>
+  <div class="hsk1__modal" role="dialog" aria-modal="true" aria-label="Результаты">
+    <div class="hsk1__modalHead">
+      <div>
+        <div class="hsk1__modalTitle">Результаты</div>
+        <div class="hsk1__modalSub" id="resultSummary"></div>
+      </div>
+      <button class="hsk1__iconBtn" type="button" data-close-modal="1" aria-label="Закрыть">✕</button>
+    </div>
+
+    <div class="hsk1__modalBody" id="resultBody"></div>
+
+    <div class="hsk1__modalFoot">
+      <button class="hsk1__btn" type="button" data-close-modal="1">Закрыть</button>
+      <button class="hsk1__btn hsk1__btn--primary" type="button" id="retryBtn">Пройти ещё раз</button>
+    </div>
+  </div>
+</div>
+
+
+<style>
+  :root {
+    --hsk1-font-base: 20px;
+    --hsk1-font-title: 24px;
+    --hsk1-font-sub: 18px;
+    --hsk1-radius-lg: 16px;
+    --hsk1-radius-md: 16px;
+    --hsk1-radius-sm: 14px;
+    --hsk1-space-xs: 8px;
+    --hsk1-space-sm: 12px;
+    --hsk1-space-md: 14px;
+    --hsk1-space-lg: 18px;
+  }
+
+  /* ===== Minimal “Practicum-like” clean UI ===== */
+  .hsk1 { font-family: LabGrotesque; color: #0b0b0f; font-size: var(--hsk1-font-base); line-height: 1.6; }
+  .hsk1 * { box-sizing: border-box; }
+  .hsk1 img, .hsk1 video { max-width: 100%; height: auto; }
+  html, body { overflow-x: hidden; }
+
+  .hsk1__shell { max-width: 1180px; margin: 0 auto; padding: var(--hsk1-space-lg); }
+
+  .hsk1__head {
+    display:flex; gap:var(--hsk1-space-md); align-items:center; justify-content:space-between;
+    padding: var(--hsk1-space-md);
+    border:1px solid #e7e7ee; border-radius: var(--hsk1-radius-lg); background:#fff;
+    position: sticky; top: 0; z-index: 5;
+  }
+
+  .hsk1__brand { display:flex; gap:var(--hsk1-space-sm); align-items:center; min-width: 240px; }
+  .hsk1__logo {
+    min-width: 60px;
+    height: 52px;
+    padding: 0 var(--hsk1-space-md);
+    border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #F6A724; color: #fff; font-weight: 700; letter-spacing: .5px; line-height: 1; white-space: nowrap;
+    font-size: 1.02em;
+  }
+
+  .hsk1__title { font-weight: 500; font-size: var(--hsk1-font-title); line-height: 1.2; }
+  .hsk1__subtitle { color:#6b7280; font-size: var(--hsk1-font-sub); margin-top:2px; }
+
+  .hsk1__status { display:flex; gap: var(--hsk1-space-sm); align-items:center; flex-wrap:wrap; }
+
+  .hsk1__progress { display:flex; gap:var(--hsk1-space-sm); align-items:center; min-width: 230px; }
+  .hsk1__progressBar { width: 170px; height: 11px; background:#f1f2f6; border-radius: 999px; overflow:hidden; }
+  .hsk1__progressFill { height:100%; width:0%; background:#111827; border-radius: 999px; transition: width .25s ease; }
+  .hsk1__progressText { font-size: 13px; color:#6b7280; min-width: 40px; text-align:right; }
+
+  .hsk1__btn {
+    border: 1px solid #e7e7ee; background:#fff; color:#111827;
+    padding: 11px 16px; border-radius: var(--hsk1-radius-sm); font-weight: 450; cursor:pointer;
+    transition: transform .06s ease, background .15s ease, border-color .15s ease;
+    font-size: 16px;
+  }
+  .hsk1__btn:active { transform: translateY(1px); }
+  .hsk1__btn--primary { background:#111827; color:#fff; border-color:#111827; }
+  .hsk1__btn--primary:hover { background:#0b1220; }
+
+  .hsk1__main { display:grid; grid-template-columns: 300px minmax(0, 1fr); gap: var(--hsk1-space-md); margin-top: var(--hsk1-space-md); }
+  .hsk1__nav {
+    border:1px solid #e7e7ee; border-radius: var(--hsk1-radius-lg); background:#fff; padding: var(--hsk1-space-md);
+    height: fit-content; position: sticky; top: 92px;
+  }
+  .hsk1__navTitle { font-weight: 500; padding: var(--hsk1-space-md) var(--hsk1-space-md) var(--hsk1-space-xs); font-size: 25px; }
+  .hsk1__navItem {
+    display:flex; align-items:center; justify-content:space-between; gap:var(--hsk1-space-sm);
+    padding: var(--hsk1-space-sm); border-radius: var(--hsk1-radius-md); cursor:pointer; font-size: 16px;
+  }
+  .hsk1__navItem:hover { background:#f6f7fb; }
+  .hsk1__navItem.is-active { background:#111827; color:#fff; }
+  .hsk1__navMeta { font-size:13px; color:#6b7280; }
+  .hsk1__navItem.is-active .hsk1__navMeta { color:#c7cbe0; }
+
+  .hsk1__content { display:flex; flex-direction:column; gap: var(--hsk1-space-md); }
+  .hsk1__card {
+    border:1px solid #e7e7ee; border-radius: var(--hsk1-radius-lg); background:#fff; padding: var(--hsk1-space-lg);
+  }
+  .hsk1__itemCard { margin-top: 12px; padding: 14px; border-radius: var(--hsk1-radius-lg); border:1px solid #eef0f6; background:#fff; }
+  .hsk1__itemCard .hsk1__cardHead { margin-bottom: 8px; }
+  .hsk1__cardHead { display:flex; align-items:flex-start; justify-content:space-between; gap:var(--hsk1-space-sm); margin-bottom: 10px; }
+  .hsk1__cardTitle { font-weight: 500; font-size: 20px; }
+  .hsk1__pill { font-size:13px; padding:7px 12px; border-radius: 999px; background:#f6f7fb; color:#111827; border:1px solid #eceef7; }
+  .hsk1__desc { color:#6b7280; font-size: 14px; margin-bottom: 12px; }
+
+  .hsk1__row { display:flex; flex-wrap:wrap; gap: 10px; align-items:center; }
+  .hsk1__audioRow { display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; flex-direction:column; }
+  .hsk1__audioPlayer {
+    width: min(680px, 100%);
+    display:flex; align-items:center; gap: 14px;
+    padding: 0;
+  }
+  .hsk1__audioPlay {
+    width: 56px; height: 56px; aspect-ratio: 1 / 1; border-radius: 50%; padding: 0; flex-shrink: 0;
+    border: 1px solid #e5e7eb; cursor:pointer; background:#fff; color:#0f172a;
+    display:inline-flex; align-items:center; justify-content:center;
+    box-shadow: 0 12px 28px rgba(17,24,39,.14);
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease, color .12s ease;
+  }
+  .hsk1__audioPlay:hover { transform: translateY(-1px); background:#f8fafc; border-color:#d6d9e4; box-shadow: 0 14px 32px rgba(17,24,39,.18); }
+  .hsk1__audioPlay:active { transform: translateY(0); }
+  .hsk1__audioPlayIcon { width: 24px; height: 24px; display:block; color:inherit; }
+  .hsk1__audioWave {
+    flex: 1 1 auto; position: relative; min-height: 90px; overflow:hidden;
+    display:flex; align-items:center; cursor: pointer;
+    width: 100%;
+    --hsk1-wave-width: 3px;
+    --hsk1-wave-gap: 3px;
+  }
+  .hsk1__audioLines { position: relative; z-index: 1; display:flex; align-items:center; gap: var(--hsk1-wave-gap); width: 100%; height: 100%; }
+  .hsk1__audioLine {
+    width: var(--hsk1-wave-width); border-radius: 999px; background:#d3d6de; transition: background .2s ease, box-shadow .2s ease, filter .2s ease;
+  }
+  .hsk1__audioLine.is-filled {
+    background: #f97316;
+    box-shadow: none;
+    filter: none;
+  }
+  .hsk1__audioTime { min-width: 120px; text-align:right; color:#6b7280; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .hsk1__audioMeta { color:#6b7280; font-size: 13px; padding-left: 2px; }
+
+  .hsk1__videoEmbed { margin-top: 12px; }
+  .hsk1__videoFrame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 1px;
+    border: 0px solid #eef0f6;
+    overflow: hidden;
+    background: #0b0b0f;
+  }
+  .hsk1__videoFrame iframe,
+  .hsk1__videoFrame video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .hsk1__videoPlaceholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.95));
+  }
+  .hsk1__videoPoster {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: saturate(1.05);
+    transform: scale(1.02);
+  }
+  .hsk1__videoPlaceholder.is-empty .hsk1__videoPoster {
+    display: none;
+  }
+  .hsk1__videoShade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.15), rgba(2, 6, 23, 0.6));
+  }
+  .hsk1__videoPlay {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(15, 23, 42, 0.72);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.45);
+    font-weight: 500;
+    transition: transform .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .hsk1__videoPlaceholder:hover .hsk1__videoPlay {
+    transform: translateY(-1px);
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  .hsk1__videoPlayIcon {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+  }
+  .hsk1__videoPlayIcon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hsk1__choices { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+  .hsk1__choices--single { margin-top: 0; grid-template-columns: 1fr; }
+  .hsk1__choice {
+    border:1px solid #e7e7ee; border-radius: 14px; padding: 13px 14px; cursor:pointer;
+    background:#fff; transition: background .15s ease, border-color .15s ease;
+    min-height: 52px;
+  }
+  .hsk1__choice:hover { background:#f6f7fb; }
+  .hsk1__choice.is-selected { border-color:#111827; box-shadow: 0 0 0 3px rgba(17,24,39,.08); }
+  .hsk1__choiceTop { display:flex; align-items:center; gap: 10px; }
+  .hsk1__thumb { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; border:1px solid #eef0f6; background:#f6f7fb; }
+  .hsk1__choiceText { font-weight: 600; font-size: 17px; }
+  .hsk1__choiceSub { font-size: 13px; color:#6b7280; margin-top: 2px; }
+
+  .hsk1__select {
+    border:1px solid #e7e7ee; border-radius: 12px; padding: 12px; min-width: 180px; font-weight:400; font-size: 16px;
+    background:#fff;
+  }
+  .hsk1__selectWrap { position: relative; min-width: 180px; }
+  .hsk1__selectTrigger {
+    width: 100%; text-align:left; border:1px solid #e7e7ee; background:#fff; color:#111827;
+    padding: 12px 14px; border-radius: 16px; font-size: 16px; cursor:pointer; font-weight: 500;
+    box-shadow: 0 10px 22px rgba(17,24,39,.05); display:flex; align-items:center; justify-content:space-between;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .08s ease;
+  }
+  .hsk1__selectTrigger:hover { border-color:#cfd3e6; box-shadow: 0 12px 26px rgba(17,24,39,.08); transform: translateY(-1px); }
+  .hsk1__selectTrigger:active { transform: translateY(0); }
+  .hsk1__selectLabel { color:#111827; }
+  .hsk1__selectCaret { width: 18px; height: 18px; display:inline-block; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 20 20'%3E%3Cpath fill='%236b7280' d='M5.6 7.4a1 1 0 0 1 1.4 0L10 10.4l3-3a1 1 0 1 1 1.4 1.4l-3.7 3.7a1 1 0 0 1-1.4 0L5.6 8.8a1 1 0 0 1 0-1.4Z'/%3E%3C/svg%3E") center center / contain no-repeat; }
+  .hsk1__selectList {
+    position:absolute; left:0; top: calc(100% + 8px);
+    background:#fff; border:1px solid #e7e7ee; border-radius: 16px;
+    box-shadow: 0 18px 38px rgba(17,24,39,.12);
+    padding: 10px; display:none; z-index: 20; min-width: 220px;
+  }
+  .hsk1__selectWrap.is-open .hsk1__selectList { display:block; }
+  .hsk1__selectOption {
+    width: 100%; text-align:left; border:none; background:#f6f7fb; border-radius: 12px;
+    padding: 11px 12px; font-size: 16px; cursor:pointer; color:#111827;
+    transition: background .12s ease, transform .08s ease, box-shadow .12s ease;
+  }
+  .hsk1__selectOption + .hsk1__selectOption { margin-top: 8px; }
+  .hsk1__selectOption:hover { background:#eef0f6; transform: translateY(-1px); }
+  .hsk1__selectOption.is-active { box-shadow: 0 0 0 2px rgba(17,24,39,.12); background:#fff; }
+
+  /* Drag tokens */
+  .hsk1__bank { display:flex; flex-wrap:wrap; gap: 10px; padding: 12px; background:#f6f7fb; border:1px solid #eceef7; border-radius: 14px; }
+  .hsk1__token {
+    padding: 10px 12px; border-radius: 999px; border:1px solid #e7e7ee; background:#fff; cursor: grab;
+    font-weight: 500; user-select:none;
+  }
+  .hsk1__token:active { cursor: grabbing; }
+  .hsk1__token.is-picked { outline: 3px solid rgba(17,24,39,.18); }
+
+  .hsk1__slots { display:flex; flex-wrap:wrap; gap: 10px; padding: 12px; border:1px dashed #cfd3e6; border-radius: 14px; background:#fff; }
+  .hsk1__slot {
+    min-width: 92px; min-height: 40px; border-radius: 12px;
+    border:1px solid #e7e7ee; background:#fff; display:flex; align-items:center; justify-content:center;
+    padding: 6px 10px; font-weight:500; color:#111827;
+  }
+  .hsk1__slot.is-hover { box-shadow: 0 0 0 3px rgba(17,24,39,.08); border-color:#111827; }
+  .hsk1__slot.is-empty { color:#9aa3b2; font-weight:400; }
+
+  /* Match grid */
+  .hsk1__matchGrid { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hsk1__pair {
+    border:1px solid #e7e7ee; border-radius: 14px; padding: 12px; background:#fff; cursor:pointer;
+    font-weight: 500;
+  }
+  .hsk1__pair.is-picked { outline: 3px solid rgba(17,24,39,.18); }
+  .hsk1__pair.is-done { background:#f6f7fb; color:#6b7280; cursor: default; }
+
+  .hsk1__textBox { border:1px solid #e7e7ee; border-radius: 14px; padding: 14px; background:#fff; color:#111827; line-height:1.6; font-size: 16px; }
+  .hsk1__q { margin-top: 12px; padding-top: 12px; border-top:1px solid #eef0f6; }
+  .hsk1__qTitle { font-weight: 600; margin-bottom: 8px; }
+
+  /* Footer */
+  .hsk1__foot { margin-top: 18px; }
+  .hsk1__hint { color:#6b7280; font-size: 13.5px; padding: 12px 2px; }
+
+  /* ===== Modal (scroll fix) ===== */
+  .hsk1__modalWrap {
+    position: fixed; inset: 0; display:none; z-index: 999999;
+    overflow: auto; -webkit-overflow-scrolling: touch;
+    align-items: flex-start; justify-content:center; padding: 18px;
+  }
+  .hsk1__modalWrap.is-open { display:flex; }
+  .hsk1__modalBackdrop { position: fixed; inset:0; background: rgba(10,12,18,.48); }
+  .hsk1__modal {
+    position: relative; z-index: 2; width: min(980px, 100%);
+    max-height: calc(100vh - 36px);
+    border-radius: 18px; border:1px solid #e7e7ee; background:#fff;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .hsk1__modalHead {
+    display:flex; align-items:flex-start; justify-content:space-between; gap: 12px;
+    padding: 14px 16px; border-bottom:1px solid #eef0f6; background:#fff;
+  }
+  .hsk1__modalTitle { font-weight: 650; font-size: 18px; }
+  .hsk1__modalSub { margin-top: 2px; color:#6b7280; font-size: 13.5px; }
+  .hsk1__iconBtn { border:1px solid #e7e7ee; background:#fff; border-radius: 12px; padding: 8px 10px; cursor:pointer; font-weight: 600; }
+  .hsk1__iconBtn:hover { background:#f6f7fb; }
+
+  .hsk1__modalBody {
+    padding: 14px 16px;
+    overflow:auto; -webkit-overflow-scrolling: touch;
+    flex: 1 1 auto; min-height: 0;
+    background:#fff;
+  }
+
+  .hsk1__modalFoot {
+    padding: 12px 16px; border-top:1px solid #eef0f6; background:#fff;
+    display:flex; justify-content:flex-end; gap:10px;
+    flex: 0 0 auto;
+  }
+  body.hsk1--modal-open { overflow:hidden !important; touch-action:none; }
+
+  .hsk1__scoreRow { display:flex; gap: 12px; align-items:center; flex-wrap:wrap; }
+  .hsk1__scoreBox { padding: 14px; border:1px solid #e7e7ee; border-radius: 16px; background:#fff; min-width: 220px; }
+  .hsk1__scoreLabel { color:#6b7280; font-size: 13px; }
+  .hsk1__scoreValue { font-weight: 650; font-size: 24px; margin-top: 2px; }
+  .hsk1__stars { display:flex; gap:8px; margin-top: 10px; }
+  .hsk1__star { width: 18px; height: 18px; display:inline-block; transform: scale(.9); opacity:.35; transition: transform .25s ease, opacity .25s ease; }
+  .hsk1__star.is-on { opacity: 1; transform: scale(1.08); }
+  .hsk1__star svg { width:100%; height:100%; display:block; }
+  .hsk1__hr { height:1px; background:#eef0f6; margin: 14px 0; }
+  .hsk1__errCard { border:1px solid #eef0f6; border-radius: 16px; padding: 12px; background:#fbfbfe; margin-top: 10px; }
+  .hsk1__errTop { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+  .hsk1__errTitle { font-weight: 600; }
+  .hsk1__badgeBad { color:#b42318; font-weight: 600; }
+  .hsk1__kv { margin-top: 8px; display:grid; gap: 6px; font-size: 13px; }
+  .hsk1__kv b { font-weight: 600; }
+  .hsk1__rule { margin-top: 8px; color:#475569; font-size: 13px; }
+
+  /* ===== MOBILE LAYOUT + FINISH BUTTON DOCK ===== */
+  @media (max-width: 980px){
+    #hsk1-root { overflow-x: hidden; }
+    .hsk1__main { grid-template-columns: minmax(0, 1fr); width: 100%; max-width: 100%; }
+    .hsk1__nav,
+    .hsk1__content,
+    .hsk1__card,
+    .hsk1__itemCard {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+    .hsk1__navItem,
+    .hsk1__cardHead,
+    .hsk1__row {
+      min-width: 0;
+    }
+    .hsk1__navMeta,
+    .hsk1__navItem b {
+      word-break: break-word;
+    }
+    .hsk1__nav { position: relative; top: 0; }
+    .hsk1__choices { grid-template-columns: 1fr; }
+    .hsk1__progress { min-width: unset; }
+    .hsk1__progressBar { width: 120px; }
+
+    /* Шапку делаем переносимой, чтобы ничего не вылезало вправо */
+    .hsk1__head { flex-wrap: wrap; align-items: flex-start; }
+
+    /* Блок статуса растягиваем на всю ширину под брендом */
+    .hsk1__status {
+      width: 100%;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* Кнопку "Завершить" переносим вниз и делаем фиксированной */
+    #finishBtn{
+      position: fixed !important;
+      left: 12px !important;
+      right: 12px !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 12px) !important;
+      z-index: 9999 !important;
+
+      /* визуально как “нижняя панель” */
+      padding: 12px 14px !important;
+      border-radius: 14px !important;
+      max-width: 520px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    /* Чтобы нижняя кнопка не перекрывала контент */
+    .hsk1__shell{
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px) !important;
+    }
+  }
+
+  @media (max-width: 640px){
+    :root {
+      --hsk1-font-base: 18px;
+      --hsk1-font-title: 20px;
+      --hsk1-font-sub: 16px;
+      --hsk1-space-lg: 16px;
+    }
+
+    .hsk1__shell { padding: 14px; }
+    .hsk1__head { padding: 12px; gap: 10px; }
+    .hsk1__brand { flex-wrap: wrap; width: 100%; }
+    .hsk1__status { width: 100%; align-items: flex-start; flex-direction: column; }
+    .hsk1__progress { width: 100%; }
+    .hsk1__progressBar { width: 100%; max-width: none; }
+
+    .hsk1__btn { width: 100%; text-align: center; }
+    .hsk1__card { padding: 14px; }
+    .hsk1__cardHead { flex-wrap: wrap; gap: 8px; }
+    .hsk1__cardTitle { font-size: 18px; }
+    .hsk1__row { width: 100%; }
+
+    .hsk1__audioPlayer { flex-direction: column; align-items: flex-start; width: 100%; gap: 10px; }
+    .hsk1__audioWave {
+      width: 100%;
+      min-height: 72px;
+      --hsk1-wave-width: 3px;
+      --hsk1-wave-gap: 3px;
+    }
+    .hsk1__audioTime { width: 100%; text-align: left; }
+
+    .hsk1__choices, .hsk1__matchGrid { grid-template-columns: 1fr; }
+    .hsk1__choiceTop { flex-wrap: wrap; }
+    .hsk1__pair, .hsk1__selectWrap { width: 100%; }
+    .hsk1__selectTrigger { width: 100%; }
+
+    .hsk1__scoreRow { flex-direction: column; align-items: stretch; }
+    .hsk1__scoreBox { width: 100%; }
+
+    #finishBtn{
+      left: 12px !important;
+      right: 12px !important;
+      width: auto;
+      max-width: calc(100% - 24px);
+    }
+  }
+  /* === FIX: модалка вне .hsk1, поэтому принудительно задаём шрифт === */
+.hsk1__modalWrap,
+.hsk1__modalWrap * {
+  font-family: LabGrotesque, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+/* === Spacing fix for Order Drag blocks ("Банк слов" / "Слоты" / "Очистить") === */
+
+/* Делает вертикальные отступы между блоками внутри задания */
+.hsk1__itemCard .hsk1__bank { 
+  margin-top: 10px; 
+  margin-bottom: 14px;  /* отделяем банк от "Слоты:" */
+}
+
+.hsk1__itemCard .hsk1__slots { 
+  margin-top: 10px;      /* отделяем "Слоты:" от контейнера слотов */
+  margin-bottom: 14px;   /* отделяем слоты от кнопки */
+}
+
+/* Отступы вокруг кнопок управления ("Очистить") */
+.hsk1__itemCard .hsk1__row { 
+  margin-top: 10px; 
+  margin-bottom: 6px;
+}
+
+/* Чтобы надпись "Слоты:" (desc) не прилипала к банку */
+.hsk1__itemCard .hsk1__bank + .hsk1__desc {
+  margin-top: 14px;
+}
+
+/* И немного отделим "Слоты:" от предыдущего текста, если есть подряд desc */
+.hsk1__itemCard .hsk1__desc + .hsk1__desc {
+  margin-top: 10px;
+}
+
+/* === Spacing fix for Match Pairs (внутренние отступы между словами) === */
+
+/* Вертикальный ритм внутри колонок */
+.hsk1__matchGrid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* расстояние между карточками */
+}
+
+/* Немного воздуха снизу перед кнопкой */
+.hsk1__itemCard .hsk1__matchGrid {
+  margin-bottom: 14px;
+}
+
+/* Кнопка "Очистить пары" — отступ сверху */
+.hsk1__itemCard .hsk1__matchGrid + .hsk1__row {
+  margin-top: 12px;
+}
+
+/* === NAV: больше воздуха между разделами === */
+.hsk1__nav {
+  padding: 12px;              /* чуть больше внутренний отступ панели */
+}
+
+.hsk1__navItem {
+  margin-top: 8px;            /* расстояние между пунктами */
+}
+
+/* первый пункт без лишнего отступа сверху */
+.hsk1__navItem:first-of-type {
+  margin-top: 0;
+}
+
+/* чтобы активный/hover выглядел как отдельная “плашка” */
+.hsk1__navItem {
+  border-radius: 14px;
+}
+
+/* опционально: тонкий разделитель вместо/вместе с margin */
+.hsk1__navItem + .hsk1__navItem {
+  border-top: 1px solid #eef0f6;
+  padding-top: 12px;          /* чтобы линия не прилипала к тексту */
+  margin-top: 12px;           /* общий вертикальный ритм */
+}
+/* NAV items: рамка со всех сторон (включая боковые), не конфликтует с активным фоном */
+#hsk1-root .hsk1__navItem{
+  border: 0 !important;                 /* убираем предыдущие border-bottom и т.п. */
+  box-shadow: inset 0 0 0 1px #eef0f6;  /* рамка со всех сторон */
+  margin-top: 12px;                    /* воздух между пунктами */
+  padding: 14px !important;            /* чтобы рамка не "липла" к тексту */
+  border-radius: 14px !important;
+  background: #fff;
+}
+
+/* первый пункт без лишнего отступа */
+#hsk1-root .hsk1__navItem:first-of-type{
+  margin-top: 0;
+}
+
+/* hover не съедает рамку */
+#hsk1-root .hsk1__navItem:hover{
+  background: #f6f7fb;
+}
+
+/* активный пункт: сохраняем рамку и делаем её заметной на тёмном фоне */
+#hsk1-root .hsk1__navItem.is-active{
+  background: #111827;
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.22);
+}
+
+
+/* ================================
+   FIX 2) Разделы (nav): вернуть нижние/межстрочные разделители
+   ================================ */
+.hsk1__navItem{
+  position: relative;
+}
+
+/* Чтобы у последнего не было лишней линии снизу — можно выключить */
+.hsk1__navItem:last-child{
+  border-bottom: 0;
+}
+/* ================================
+   FIX 1) Select: стрелка (chevron) ближе к тексту (не так "вправо")
+   Делаем кастомную стрелку и двигаем её левее.
+   ================================ */
+.hsk1__select{
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* место под стрелку */
+  padding-right: 56px !important;
+
+  /* кастомная стрелка */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 20 20'%3E%3Cpath fill='%236b7280' d='M5.6 7.4a1 1 0 0 1 1.4 0L10 10.4l3-3a1 1 0 1 1 1.4 1.4l-3.7 3.7a1 1 0 0 1-1.4 0L5.6 8.8a1 1 0 0 1 0-1.4Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+
+  /* ВАЖНО: это и есть "сдвиг влево" — увеличиваем отступ от правого края */
+  background-position: right 16px center;
+  background-size: 16px 16px;
+}
+
+/* (опционально) чтобы фокус-обводка не прыгала */
+.hsk1__select:focus{
+  outline: none;
+}
+/* NAV title weight override (Tilda has #allrecords b {700}) */
+#allrecords #hsk1-root .hsk1__navItem b{
+  font-weight: 500 !important;   /* попробуй 400 или 500 */
+}
+/* === FIX: единый “дизайнерский” радиус миниатюр в вариантах (Listening) === */
+:root{
+  --hsk1-thumb-size: 44px;
+  --hsk1-thumb-radius: 9px; /* попробуйте 8–10px, это “чистый” диапазон */
+}
+
+/* перебиваем любые глобальные стили Tilda на img */
+.hsk1 .hsk1__thumb{
+  width: var(--hsk1-thumb-size) !important;
+  height: var(--hsk1-thumb-size) !important;
+  border-radius: var(--hsk1-thumb-radius) !important;
+  object-fit: cover !important;
+  flex: 0 0 var(--hsk1-thumb-size);
+  overflow: hidden; /* на всякий */
+  background: #f6f7fb;
+  border: 1px solid #eef0f6;
+}
+
+/* чтобы миниатюру не “сжимало” и не ломало пропорции в строке */
+.hsk1 .hsk1__choiceTop{
+  align-items: center;
+  gap: 10px;
+}
+
+
+</style>
+
+ 
+
+<script>
+/* ============================================================
+   1) ASSETS: replace later with your own media URLs
+   ============================================================ */
+const ASSETS = {
+  // Public placeholder audio (NOT Chinese). Replace with your own mp3.
+  audio: {
+    L1: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/What%20does%20she%20love%3F.mp3",
+    L2: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/Where%20is%20the%20book%3F.mp3",
+    L3: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/What%20does%20he%20eat%3F.mp3",
+    L4: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/Where%20do%20they%20drive%20today%3F.mp3",
+    L5: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/Who%20is%20it%3F.mp3"
+  },
+  // Public placeholder images (stable generic). Replace with your own jpg/png.
+  images: {
+    apple: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=600&q=80",
+    rice: "https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    milk: "https://images.unsplash.com/photo-1634141510639-d691d86f47be?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    book: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80",
+    bus: "https://images.unsplash.com/photo-1509749837427-ac94a2553d0e?auto=format&fit=crop&w=600&q=80",
+    park: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80",
+    friend: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
+    home: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80",
+    school: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80",
+    teacher: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80",
+    student: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80"
+  },
+  // Public placeholder video (optional). Replace with your own mp4 link.
+  video: {
+    intro: "https://static.tildacdn.com/vide6631-3137-4330-a338-656639363931/Chinachild.mp4",
+    introEmbed: `<div style="position: relative; overflow: hidden; aspect-ratio: 1920/1080"><iframe src="https://share.synthesia.io/embeds/videos/6e8ff087-fe05-412d-9e9d-055258960200" loading="lazy" title="Synthesia video player - HSK1" allowfullscreen allow="encrypted-media; fullscreen; microphone; screen-wake-lock;" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 15px; border: none; padding: 0; margin: 0; overflow:hidden;"></iframe></div>`
+  }
+};
+
+/* ============================================================
+   2) TEST DATA (content can be anything; logic matters)
+   Replace texts later, keep IDs consistent.
+   ============================================================ */
+const TEST = {
+  meta: { title: "HSK1 Diagnostic", version: "1.0", totalPoints: 100 },
+  sections: [
+    {
+      id: "S1",
+      title: "1. Аудирование",
+      desc: "Прослушайте аудио и выберите правильный вариант",
+      points: 40,
+      items: [
+        {
+          id: "L1Q1",
+          type: "listening_choice",
+          prompt: "Что она любит?",
+          audioKey: "L1",
+          choices: [
+            { id:"A", text:"苹果 (яблоко)", img:"apple" },
+            { id:"B", text:"牛奶 (молоко)", img:"milk" },
+            { id:"C", text:"书 (книга)", img:"book" }
+          ],
+          correct: "A",
+          rule: "喜欢 + объект: «нравится/любить»."
+        },
+        {
+          id: "L1Q2",
+          type: "listening_choice",
+          prompt: "Где книга?",
+          audioKey: "L2",
+          choices: [
+            { id:"A", text:"在学校 (в школе)", img:"school" },
+            { id:"B", text:"在家 (дома)", img:"home" },
+            { id:"C", text:"在公园 (в парке)", img:"park" }
+          ],
+          correct: "B",
+          rule: "在 + место: «находиться где-то»."
+        },
+        {
+          id: "L1Q3",
+          type: "listening_choice",
+          prompt: "Что он ест?",
+          audioKey: "L3",
+          choices: [
+            { id:"A", text:"米饭 (рис)", img:"rice" },
+            { id:"B", text:"苹果 (яблоко)", img:"apple" },
+            { id:"C", text:"牛奶 (молоко)", img:"milk" }
+          ],
+          correct: "A",
+          rule: "动词 «吃» + еда."
+        },
+        {
+          id: "L1Q4",
+          type: "listening_choice",
+          prompt: "Куда они едут сегодня?",
+          audioKey: "L4",
+          choices: [
+            { id:"A", text:"今天去公园", img:"park" },
+            { id:"B", text:"今天去学校", img:"school" },
+            { id:"C", text:"今天在家", img:"home" }
+          ],
+          correct: "A",
+          rule: "时间 + 去 + 地点."
+        },
+        {
+          id: "L1Q5",
+          type: "listening_choice",
+          prompt: "Кто это?",
+          audioKey: "L5",
+          choices: [
+            { id:"A", text:"朋友 (друг)", img:"friend" },
+            { id:"B", text:"老师 (учитель)", img:"teacher" },
+            { id:"C", text:"学生 (студент)", img:"student" }
+          ],
+          correct: "A",
+          rule: "Кто это? 基本词汇."
+        }
+      ]
+    },
+
+    {
+      id: "S2",
+      title: "2. Вставьте слово",
+      desc: "Выберите правильное слово в пропуске.",
+      points: 15,
+      items: [
+        {
+          id: "G1",
+          type: "fill_dropdown",
+          prompt: "我 ___ 学生。",
+          options: ["是", "在", "有"],
+          correct: "是",
+          rule: "是 = связка «быть»."
+        },
+        {
+          id: "G2",
+          type: "fill_dropdown",
+          prompt: "她 ___ 北京。",
+          options: ["在", "去", "喝"],
+          correct: "在",
+          rule: "在 + место: «находиться где-то»."
+        },
+        {
+          id: "G3",
+          type: "fill_dropdown",
+          prompt: "我们 ___ 公园。",
+          options: ["去", "有", "不"],
+          correct: "去",
+          rule: "去 + 地点: «идти/ехать куда-то»."
+        }
+      ]
+    },
+
+    {
+      id: "S3",
+      title: "3. Соберите предложение",
+      desc: "Перетащите слова в слоты (или: нажмите слово → нажмите слот).",
+      points: 15,
+      items: [
+        {
+          id: "D1",
+          type: "order_drag",
+          prompt: "Соберите: «Я люблю молоко»",
+          tokens: ["我", "喜欢", "牛奶"],
+          slots: 3,
+          correct: ["我", "喜欢", "牛奶"],
+          rule: "喜欢 + объект: «нравится/любить»."
+        },
+        {
+          id: "D2",
+          type: "order_drag",
+          prompt: "Соберите: «Он сегодня в школе»",
+          tokens: ["他", "今天", "在", "学校"],
+          slots: 4,
+          correct: ["他", "今天", "在", "学校"],
+          rule: "Порядок: подлежащее + время + 在 + место."
+        }
+      ]
+    },
+
+    {
+      id: "S4",
+      title: "4. Сопоставьте",
+      desc: "Соедините пары (нажмите слева → нажмите справа или перетащите).",
+      points: 15,
+      items: [
+        {
+          id: "M1",
+          type: "match_pairs",
+          prompt: "Сопоставьте слово и перевод",
+          left: ["苹果", "牛奶", "老师", "朋友"],
+          right: ["учитель", "молоко", "яблоко", "друг"],
+          correctMap: { "苹果":"яблоко", "牛奶":"молоко", "老师":"учитель", "朋友":"друг" },
+          rule: "Лексические пары: запоминать как соответствия."
+        }
+      ]
+    },
+
+    {
+      id: "S5",
+      title: "5. Чтение",
+      desc: "Прочитайте текст и ответьте на вопросы.",
+      points: 15,
+      items: [
+        {
+          id: "R1",
+          type: "reading_mcq",
+          passageTitle: "短文",
+          passage: "我叫小丽。我住在上海。我今天去学校。我喜欢看书。",
+          questions: [
+            {
+              qid: "R1Q1",
+              q: "她今天去哪儿？",
+              choices: [
+                {id:"A", text:"去学校"},
+                {id:"B", text:"在家"},
+                {id:"C", text:"去公园"}
+              ],
+              correct: "A",
+              rule: "文本: «我今天去学校»."
+            },
+            {
+              qid: "R1Q2",
+              q: "她喜欢什么？",
+              choices: [
+                {id:"A", text:"看书"},
+                {id:"B", text:"喝水"},
+                {id:"C", text:"吃米饭"}
+              ],
+              correct: "A",
+              rule: "文本: «我喜欢看书»."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      id: "S6",
+      title: "6. Дополнительное задание",
+      desc: "Вставьте подходящее слово/фразу в пропуск.",
+      points: 0, /* оставим 0, чтобы суммарно было 100 по нормировке ниже */
+      items: [
+        {
+          id: "C1",
+          type: "cloze_dropdown",
+          prompt: "我 ___ 中国人。 我 ___ 北京学习。",
+          blanks: [
+            { options: ["是", "在", "有"], correct: "是" },
+            { options: ["在", "去", "喜欢"], correct: "在" }
+          ],
+          rule: "是 = связка «быть». 在 = «находиться/быть в»."
+        }
+      ]
+    }
+  ]
+};
+
+/* ============================================================
+   3) Scoring policy (objective, HSK-like weights)
+   We normalize to 100 points across sections by their 'points' weights.
+   ============================================================ */
+const SCORE_WEIGHTS = (() => {
+  const sum = TEST.sections.reduce((acc,s)=>acc + (s.points||0), 0) || 1;
+  return TEST.sections.reduce((acc,s)=>{
+    acc[s.id] = (s.points||0) / sum; // fraction of 100
+    return acc;
+  }, {});
+})();
+
+/* ============================================================
+   4) State
+   ============================================================ */
+const STATE = {
+  answers: {},     // key -> user answer
+  attempts: {},    // key -> for UI
+  matches: {},     // matchPairs: itemId -> map left->right
+  pickedToken: null,
+  pickedMatch: null,
+};
+
+const OPEN_DROPDOWNS = new Set();
+const WAVEFORMS = [];
+let waveformResizeBound = false;
+
+function el(tag, cls, html){
+  const n = document.createElement(tag);
+  if(cls) n.className = cls;
+  if(html !== undefined) n.innerHTML = html;
+  return n;
+}
+function safeText(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+document.addEventListener("click", (e)=>{
+  const toClose = [];
+  OPEN_DROPDOWNS.forEach(wrap=>{
+    if(!wrap.contains(e.target)) toClose.push(wrap);
+  });
+  toClose.forEach(wrap=>{
+    wrap.classList.remove("is-open");
+    OPEN_DROPDOWNS.delete(wrap);
+  });
+});
+
+function formatTime(sec){
+  if(!Number.isFinite(sec)) return "--:--";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+}
+
+function debounce(fn, wait){
+  let t;
+  return (...args)=>{
+    clearTimeout(t);
+    t = setTimeout(()=>fn(...args), wait);
+  };
+}
+
+function sampleHeights(source, count){
+  if(count <= 0) return [];
+  if(count >= source.length) return source.slice();
+  const result = [];
+  for(let i=0;i<count;i++){
+    const idx = Math.round((i / (count - 1)) * (source.length - 1));
+    result.push(source[idx]);
+  }
+  return result;
+}
+
+function renderWaveformBars(wave, linesWrap, heights){
+  linesWrap.innerHTML = "";
+  const styles = getComputedStyle(wave);
+  const barWidth = parseFloat(styles.getPropertyValue("--hsk1-wave-width")) || 4;
+  const barGap = parseFloat(styles.getPropertyValue("--hsk1-wave-gap")) || 4;
+  const available = wave.clientWidth || 1;
+  const count = Math.max(12, Math.floor((available + barGap) / (barWidth + barGap)));
+  const sampled = sampleHeights(heights, count);
+  const maxSource = Math.max(...sampled);
+  const maxHeight = Math.max(56, wave.clientHeight - 8);
+  const scale = maxSource ? (maxHeight / maxSource) : 1;
+  return sampled.map(h=>{
+    const line = el("div","hsk1__audioLine");
+    line.style.height = `${Math.max(6, Math.round(h * scale))}px`;
+    linesWrap.appendChild(line);
+    return line;
+  });
+}
+
+function refreshWaveforms(){
+  WAVEFORMS.forEach(waveform=>{
+    waveform.onUpdate();
+  });
+}
+
+function bindWaveformResize(){
+  if(waveformResizeBound) return;
+  waveformResizeBound = true;
+  const handler = debounce(refreshWaveforms, 120);
+  window.addEventListener("resize", handler);
+  window.addEventListener("orientationchange", ()=>setTimeout(refreshWaveforms, 200));
+}
+
+function addVideoPreconnect(embedUrl){
+  if(!embedUrl) return;
+  let origin = "";
+  try {
+    origin = new URL(embedUrl).origin;
+  } catch (err){
+    return;
+  }
+  if(!origin) return;
+  if(document.querySelector(`link[data-hsk1-preconnect="${origin}"]`)) return;
+  const dns = document.createElement("link");
+  dns.rel = "dns-prefetch";
+  dns.href = origin;
+  dns.dataset.hsk1Preconnect = origin;
+  const pre = document.createElement("link");
+  pre.rel = "preconnect";
+  pre.href = origin;
+  pre.crossOrigin = "";
+  pre.dataset.hsk1Preconnect = origin;
+  document.head.appendChild(dns);
+  document.head.appendChild(pre);
+}
+
+function loadVideoEmbed(placeholder){
+  if(!placeholder || placeholder.dataset.loaded === "1") return;
+  const embedUrl = placeholder.dataset.embedUrl || "";
+  if(!embedUrl) return;
+  placeholder.dataset.loaded = "1";
+  addVideoPreconnect(embedUrl);
+  const frame = placeholder.closest(".hsk1__videoFrame");
+  if(!frame) return;
+  const isMp4 = /\.mp4(\?|$)/i.test(embedUrl);
+  frame.innerHTML = "";
+  if(isMp4){
+    const video = document.createElement("video");
+    video.controls = true;
+    video.preload = "metadata";
+    video.src = embedUrl;
+    frame.appendChild(video);
+    return;
+  }
+  const iframe = document.createElement("iframe");
+  iframe.src = embedUrl;
+  iframe.title = "HSK1 video";
+  iframe.allowFullscreen = true;
+  iframe.allow = "encrypted-media; fullscreen; microphone;";
+  frame.appendChild(iframe);
+}
+
+function initLazyVideoEmbeds(){
+  const placeholders = Array.from(document.querySelectorAll(".hsk1__videoPlaceholder"));
+  if(!placeholders.length) return;
+  placeholders.forEach(placeholder=>{
+    if(!placeholder.dataset.previewUrl){
+      placeholder.classList.add("is-empty");
+    }
+    placeholder.addEventListener("click", ()=>loadVideoEmbed(placeholder));
+    placeholder.addEventListener("keydown", (evt)=>{
+      if(evt.key === "Enter" || evt.key === " "){
+        evt.preventDefault();
+        loadVideoEmbed(placeholder);
+      }
+    });
+  });
+  if("IntersectionObserver" in window){
+    const observer = new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          loadVideoEmbed(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: "600px" });
+    placeholders.forEach(node=>observer.observe(node));
+  }
+}
+
+function buildIntroVideoHtml(video){
+  if(!video) return "";
+  const embedRaw = typeof video.introEmbed === "string" ? video.introEmbed.trim() : "";
+  const embedUrl = typeof video.introEmbedUrl === "string" ? video.introEmbedUrl.trim() : "";
+  const previewUrl = typeof video.introPreviewUrl === "string" ? video.introPreviewUrl.trim() : "";
+  if(embedRaw){
+    if(/^https?:\/\//i.test(embedRaw)){
+      return `
+        <div class="hsk2__videoEmbed">
+          <div class="hsk2__videoFrame">
+            <iframe src="${embedRaw}" loading="lazy" title="HQC1 video" allowfullscreen allow="encrypted-media; fullscreen; microphone;"></iframe>
+          </div>
+        </div>`;
+    }
+    return `<div class="hsk2__videoEmbed">${embedRaw}</div>`;
+  }
+  if(embedUrl){
+    const posterStyle = previewUrl ? ` style="background-image: url('${previewUrl}');"` : "";
+    const emptyClass = previewUrl ? "" : " is-empty";
+    return `
+      <div class="hsk1__videoEmbed">
+        <div class="hsk1__videoFrame">
+          <div class="hsk1__videoPlaceholder${emptyClass}" data-embed-url="${embedUrl}" data-preview-url="${previewUrl}" role="button" tabindex="0" aria-label="Загрузить видео">
+            <div class="hsk1__videoPoster"${posterStyle}></div>
+            <div class="hsk1__videoShade"></div>
+            <div class="hsk1__videoPlay">
+              <span class="hsk1__videoPlayIcon">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M28.6 14.614a1.6 1.6 0 010 2.772L9.4 28.47A1.6 1.6 0 017 27.085V4.915a1.6 1.6 0 012.4-1.386l19.2 11.085z"/></svg>
+              </span>
+              <span>Смотреть видео</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+  if(video.intro){
+    return `<video controls preload="metadata" style="width:100%; border-radius:14px; border:1px solid #eef0f6;">
+      <source src="${video.intro}" type="video/mp4">
+    </video>`;
+  }
+  return "";
+}
+
+function createDropdown(options, placeholder, value, onChange){
+  const opts = options.map(o => typeof o === "string" ? { value:o, label:o } : o);
+  const wrap = el("div","hsk1__selectWrap");
+  const trigger = el("button","hsk1__selectTrigger");
+  trigger.type = "button";
+  const label = el("span","hsk1__selectLabel");
+  const caret = el("span","hsk1__selectCaret");
+  trigger.appendChild(label);
+  trigger.appendChild(caret);
+
+  const list = el("div","hsk1__selectList");
+
+  function setValue(val){
+    const active = opts.find(o => String(o.value) === String(val));
+    label.textContent = active ? active.label : placeholder;
+    list.querySelectorAll(".hsk1__selectOption").forEach(btn=>{
+      btn.classList.toggle("is-active", btn.dataset.value === String(val));
+    });
+  }
+
+  opts.forEach(opt => {
+    const optBtn = el("button","hsk1__selectOption");
+    optBtn.type = "button";
+    optBtn.textContent = opt.label;
+    optBtn.dataset.value = String(opt.value);
+    optBtn.addEventListener("click", ()=>{
+      value = opt.value;
+      setValue(value);
+      wrap.classList.remove("is-open");
+      onChange(value);
+    });
+    list.appendChild(optBtn);
+  });
+
+  trigger.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    const willOpen = !wrap.classList.contains("is-open");
+    OPEN_DROPDOWNS.forEach(other => { if(other !== wrap) other.classList.remove("is-open"); });
+    wrap.classList.toggle("is-open", willOpen);
+    if(willOpen) OPEN_DROPDOWNS.add(wrap); else OPEN_DROPDOWNS.delete(wrap);
+  });
+
+  wrap.appendChild(trigger);
+  wrap.appendChild(list);
+  setValue(value || "");
+  return wrap;
+}
+
+function getAllQuestionKeys(){
+  const keys = [];
+  TEST.sections.forEach(sec=>{
+    sec.items.forEach(item=>{
+      if(item.type === "reading_mcq"){
+        item.questions.forEach(q=> keys.push(`${item.id}::${q.qid}`));
+      } else {
+        keys.push(item.id);
+      }
+    });
+  });
+  return keys;
+}
+
+function computeProgress(){
+  const keys = getAllQuestionKeys();
+  let answered = 0;
+  keys.forEach(k=>{
+    if(STATE.answers[k] !== undefined && STATE.answers[k] !== null && STATE.answers[k] !== "") answered++;
+  });
+  const pct = Math.round((answered / keys.length) * 100);
+  return { answered, total: keys.length, pct };
+}
+
+/* ============================================================
+   5) Rendering NAV and CONTENT
+   ============================================================ */
+function render(){
+  const nav = document.getElementById("nav");
+  const content = document.getElementById("content");
+  nav.innerHTML = "";
+  content.innerHTML = "";
+  WAVEFORMS.length = 0;
+
+  nav.appendChild(el("div","hsk1__navTitle","Разделы"));
+
+  TEST.sections.forEach((sec, idx)=>{
+    const item = el("div","hsk1__navItem" + (idx===0 ? " is-active":"" ));
+    item.dataset.secId = sec.id;
+    const left = el("div",null,`<div><b>${safeText(sec.title)}</b></div><div class="hsk1__navMeta">${safeText(sec.desc)}</div>`);
+    const right = el("div", "hsk1__navMeta", `${Math.round((SCORE_WEIGHTS[sec.id]||0)*100)}%`);
+    item.appendChild(left); item.appendChild(right);
+    item.addEventListener("click", ()=>{
+      document.querySelectorAll(".hsk1__navItem").forEach(n=>n.classList.remove("is-active"));
+      item.classList.add("is-active");
+      document.getElementById(sec.id).scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    nav.appendChild(item);
+  });
+
+  // optional: intro video card
+  const introVideoHtml = buildIntroVideoHtml(ASSETS.video);
+  const intro = el("div","hsk1__card");
+  intro.innerHTML = `
+    <div class="hsk1__cardHead">
+      <div class="hsk1__cardTitle">Как пользоваться</div>
+    </div>
+    <div class="hsk1__desc">
+    </div>
+    ${introVideoHtml}
+  `;
+  content.appendChild(intro);
+
+  TEST.sections.forEach(sec=>{
+    const secCard = el("div","hsk1__card");
+    secCard.id = sec.id;
+    secCard.appendChild(el("div","hsk1__cardHead", `
+      <div>
+        <div class="hsk1__cardTitle">${safeText(sec.title)}</div>
+        <div class="hsk1__desc">${safeText(sec.desc)}</div>
+      </div>
+      <div class="hsk1__pill">${Math.round((SCORE_WEIGHTS[sec.id]||0)*100)}% веса</div>
+    `));
+
+    sec.items.forEach(item=>{
+      secCard.appendChild(renderItem(sec, item));
+    });
+
+    content.appendChild(secCard);
+  });
+
+  wireFinish();
+  updateProgressUI();
+  bindWaveformResize();
+  refreshWaveforms();
+  initLazyVideoEmbeds();
+}
+
+function renderItem(sec, item){
+  const wrap = el("div", "hsk1__card hsk1__itemCard");
+  const head = el("div","hsk1__cardHead");
+  head.appendChild(el("div","hsk1__cardTitle", safeText(item.prompt || item.passageTitle || "Задание")));
+  head.appendChild(el("div","hsk1__pill", `ID: ${safeText(item.id)}`));
+  wrap.appendChild(head);
+
+  if(item.type === "listening_choice"){
+    wrap.appendChild(renderListeningChoice(item));
+  } else if(item.type === "fill_dropdown"){
+    wrap.appendChild(renderFillDropdown(item));
+  } else if(item.type === "order_drag"){
+    wrap.appendChild(renderOrderDrag(item));
+  } else if(item.type === "match_pairs"){
+    wrap.appendChild(renderMatchPairs(item));
+  } else if(item.type === "reading_mcq"){
+    wrap.appendChild(renderReading(item));
+  } else if(item.type === "cloze_dropdown"){
+    wrap.appendChild(renderCloze(item));
+  } else {
+    wrap.appendChild(el("div","hsk1__desc","Неизвестный тип задания."));
+  }
+
+  return wrap;
+}
+
+/* ============================================================
+   6) Item types
+   ============================================================ */
+
+function renderListeningChoice(item){
+  const box = el("div");
+  const audioRow = el("div","hsk1__audioRow");
+  const player = el("div","hsk1__audioPlayer");
+  const playBtn = el("button","hsk1__audioPlay");
+  playBtn.type = "button";
+  const playIcon = el("span","hsk1__audioPlayIcon");
+  playBtn.appendChild(playIcon);
+
+  const wave = el("div","hsk1__audioWave");
+  const linesWrap = el("div","hsk1__audioLines");
+  const lineHeights = [6,10,32,6,34,45,17,34,12,22,16,23,26,6,57,21,14,50,21,8,41,14,6,19,24,7,48,61,7,7,47,8,22,39,29,23,41,9,11,44,13,9,50,20,6,40,34,7,38,51,16,6,24,20,15,41,32,19,41,41,16,8,35,8,31,21,6,29,30,6,17,60,14,22,36,21,18,32,14,16,63,29];
+  let lineEls = renderWaveformBars(wave, linesWrap, lineHeights);
+  WAVEFORMS.push({
+    wave,
+    linesWrap,
+    heights: lineHeights,
+    onUpdate: ()=>{
+      lineEls = renderWaveformBars(wave, linesWrap, lineHeights);
+      syncAudioUI();
+    }
+  });
+  wave.appendChild(linesWrap);
+
+  const time = el("div","hsk1__audioTime","00:00 / --:--");
+  player.appendChild(playBtn);
+  player.appendChild(wave);
+  player.appendChild(time);
+
+  audioRow.appendChild(player);
+  audioRow.appendChild(el("div","hsk1__audioMeta","Аудио: "+safeText(item.audioKey)));
+
+  const audio = document.createElement("audio");
+  audio.preload = "none";
+  audio.src = ASSETS.audio[item.audioKey] || "";
+
+  const playIconSvg = `<svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M28.6 14.614a1.6 1.6 0 010 2.772L9.4 28.47A1.6 1.6 0 017 27.085V4.915a1.6 1.6 0 012.4-1.386l19.2 11.085z"></path></svg>`;
+  const pauseIconSvg = `<svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12 7c.552 0 1 .448 1 1v16a1 1 0 11-2 0V8c0-.552.448-1 1-1zm8 0c.552 0 1 .448 1 1v16a1 1 0 11-2 0V8c0-.552.448-1 1-1z"></path></svg>`;
+
+  function syncAudioUI(){
+    const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+    const filledCount = Math.round((pct / 100) * lineEls.length);
+    lineEls.forEach((line, idx)=>{
+      line.classList.toggle("is-filled", idx < filledCount);
+    });
+    time.textContent = `${formatTime(audio.currentTime)} / ${audio.duration ? formatTime(audio.duration) : "--:--"}`;
+  }
+
+  function setPlayState(){
+    const playing = !audio.paused && !audio.ended;
+    player.classList.toggle("is-playing", playing);
+    playIcon.innerHTML = playing ? pauseIconSvg : playIconSvg;
+  }
+
+  function seekFromEvent(evt){
+    if(!audio.duration) return;
+    const rect = wave.getBoundingClientRect();
+    const pct = Math.min(Math.max((evt.clientX - rect.left) / rect.width, 0), 1);
+    audio.currentTime = pct * audio.duration;
+    syncAudioUI();
+  }
+
+  playBtn.addEventListener("click", async ()=>{
+    if(audio.paused){
+      await audio.play();
+    } else {
+      audio.pause();
+    }
+  });
+
+  wave.addEventListener("click", seekFromEvent);
+
+  audio.addEventListener("timeupdate", syncAudioUI);
+  audio.addEventListener("loadedmetadata", syncAudioUI);
+  audio.addEventListener("play", ()=>{ setPlayState(); syncAudioUI(); });
+  audio.addEventListener("pause", setPlayState);
+  audio.addEventListener("ended", ()=>{ audio.currentTime = 0; syncAudioUI(); setPlayState(); });
+
+  syncAudioUI();
+  setPlayState();
+
+  audioRow.appendChild(audio);
+  box.appendChild(audioRow);
+
+  const choices = el("div","hsk1__choices");
+  item.choices.forEach(ch=>{
+    const c = el("div","hsk1__choice");
+    const imgUrl = ASSETS.images[ch.img] || "";
+    c.innerHTML = `
+      <div class="hsk1__choiceTop">
+        <img class="hsk1__thumb" src="${imgUrl}" alt="">
+        <div>
+          <div class="hsk1__choiceText">${safeText(ch.text)}</div>
+          <div class="hsk1__choiceSub">Выбрать</div>
+        </div>
+      </div>
+    `;
+    const key = item.id;
+    if(STATE.answers[key] === ch.id) c.classList.add("is-selected");
+    c.addEventListener("click", ()=>{
+      STATE.answers[key] = ch.id;
+      // refresh selection
+      choices.querySelectorAll(".hsk1__choice").forEach(n=>n.classList.remove("is-selected"));
+      c.classList.add("is-selected");
+      updateProgressUI();
+    });
+    choices.appendChild(c);
+  });
+  box.appendChild(choices);
+  return box;
+}
+
+function renderFillDropdown(item){
+  const box = el("div");
+  const key = item.id;
+
+  const p = el("div","hsk1__desc", safeText(item.prompt));
+  box.appendChild(p);
+
+  const sel = createDropdown([
+    { value: "", label: "Выберите…" },
+    ...item.options.map(o => ({ value:o, label:o }))
+  ], "Выберите…", STATE.answers[key] || "", (val)=>{
+    STATE.answers[key] = val || "";
+    updateProgressUI();
+  });
+  box.appendChild(sel);
+  return box;
+}
+
+function renderOrderDrag(item){
+  const box = el("div");
+  box.appendChild(el("div","hsk1__desc", safeText(item.prompt)));
+
+  const bank = el("div","hsk1__bank");
+  const slots = el("div","hsk1__slots");
+
+  const key = item.id;
+  const current = Array.isArray(STATE.answers[key]) ? STATE.answers[key] : new Array(item.slots).fill("");
+
+  // slots
+  for(let i=0;i<item.slots;i++){
+    const slot = el("div","hsk1__slot " + (current[i] ? "" : "is-empty"), current[i] ? safeText(current[i]) : "Слот");
+    slot.dataset.index = String(i);
+
+    // tap-to-place
+    slot.addEventListener("click", ()=>{
+      if(!STATE.pickedToken) return;
+      placeTokenToSlot(item, key, i, STATE.pickedToken);
+      STATE.pickedToken = null;
+      refreshOrderUI();
+    });
+
+    // drag over/drop
+    slot.addEventListener("dragover", (e)=>{ e.preventDefault(); slot.classList.add("is-hover"); });
+    slot.addEventListener("dragleave", ()=> slot.classList.remove("is-hover"));
+    slot.addEventListener("drop", (e)=>{
+      e.preventDefault();
+      slot.classList.remove("is-hover");
+      const token = e.dataTransfer.getData("text/token");
+      if(token) {
+        placeTokenToSlot(item, key, i, token);
+        refreshOrderUI();
+      }
+    });
+
+    slots.appendChild(slot);
+  }
+
+  // bank tokens (available tokens exclude already placed)
+  function getAvailableTokens(){
+    const used = new Set((STATE.answers[key]||[]).filter(Boolean));
+    return item.tokens.filter(t => !used.has(t));
+  }
+
+  function refreshOrderUI(){
+    // update slots
+    const arr = Array.isArray(STATE.answers[key]) ? STATE.answers[key] : new Array(item.slots).fill("");
+    [...slots.children].forEach((slotEl, idx)=>{
+      const val = arr[idx] || "";
+      slotEl.textContent = val ? val : "Слот";
+      slotEl.classList.toggle("is-empty", !val);
+    });
+
+    // update bank
+    bank.innerHTML = "";
+    getAvailableTokens().forEach(token=>{
+      const t = el("div","hsk1__token", safeText(token));
+      t.draggable = true;
+
+      t.addEventListener("dragstart",(e)=>{
+        e.dataTransfer.setData("text/token", token);
+        e.dataTransfer.effectAllowed = "move";
+      });
+
+      // tap-to-pick
+      t.addEventListener("click", ()=>{
+        bank.querySelectorAll(".hsk1__token").forEach(n=>n.classList.remove("is-picked"));
+        if(STATE.pickedToken === token){
+          STATE.pickedToken = null;
+          return;
+        }
+        STATE.pickedToken = token;
+        t.classList.add("is-picked");
+      });
+
+      bank.appendChild(t);
+    });
+
+    updateProgressUI();
+  }
+
+  // clear button
+  const clearBtn = el("button","hsk1__btn", "Очистить");
+  clearBtn.type = "button";
+  clearBtn.addEventListener("click", ()=>{
+    STATE.answers[key] = new Array(item.slots).fill("");
+    STATE.pickedToken = null;
+    refreshOrderUI();
+  });
+
+  const controls = el("div","hsk1__row");
+  controls.appendChild(clearBtn);
+
+  box.appendChild(el("div","hsk1__desc","Банк слов:"));
+  box.appendChild(bank);
+  box.appendChild(el("div","hsk1__desc","Слоты:"));
+  box.appendChild(slots);
+  box.appendChild(controls);
+
+  // initial render
+  if(!Array.isArray(STATE.answers[key])) STATE.answers[key] = current;
+  refreshOrderUI();
+
+  return box;
+}
+
+function placeTokenToSlot(item, key, index, token){
+  const arr = Array.isArray(STATE.answers[key]) ? [...STATE.answers[key]] : new Array(item.slots).fill("");
+  // if token already placed somewhere else, remove it there
+  for(let i=0;i<arr.length;i++){
+    if(arr[i] === token) arr[i] = "";
+  }
+  arr[index] = token;
+  STATE.answers[key] = arr;
+}
+
+function renderMatchPairs(item){
+  const box = el("div");
+  box.appendChild(el("div","hsk1__desc", safeText(item.prompt)));
+
+  const grid = el("div","hsk1__matchGrid");
+  const leftCol = el("div");
+  const rightCol = el("div");
+
+  const key = item.id;
+  const doneMap = STATE.matches[key] || {}; // left -> right
+
+  // helper
+  function refresh(){
+    leftCol.innerHTML = "";
+    rightCol.innerHTML = "";
+
+    const usedRights = new Set(Object.values(doneMap));
+
+    item.left.forEach(l=>{
+      const isDone = doneMap[l] !== undefined;
+      const card = el("div","hsk1__pair"+(isDone?" is-done":""), safeText(l) + (isDone ? ` → <span style="color:#111827">${safeText(doneMap[l])}</span>` : ""));
+      if(!isDone){
+        card.draggable = true;
+        card.addEventListener("dragstart",(e)=>{
+          e.dataTransfer.setData("text/mleft", l);
+          e.dataTransfer.effectAllowed="move";
+        });
+        card.addEventListener("click", ()=>{
+          pickMatch({side:"L", value:l, el:card});
+        });
+      }
+      leftCol.appendChild(card);
+    });
+
+    item.right.forEach(r=>{
+      const isUsed = usedRights.has(r);
+      const card = el("div","hsk1__pair"+(isUsed?" is-done":""), safeText(r));
+      if(!isUsed){
+        card.addEventListener("dragover",(e)=>{ e.preventDefault(); card.classList.add("is-picked"); });
+        card.addEventListener("dragleave",()=> card.classList.remove("is-picked"));
+        card.addEventListener("drop",(e)=>{
+          e.preventDefault();
+          card.classList.remove("is-picked");
+          const l = e.dataTransfer.getData("text/mleft");
+          if(l) { doneMap[l] = r; persist(); refresh(); }
+        });
+        card.addEventListener("click", ()=>{
+          pickMatch({side:"R", value:r, el:card});
+        });
+      }
+      rightCol.appendChild(card);
+    });
+
+    updateProgressUI();
+  }
+
+  function persist(){
+    STATE.matches[key] = doneMap;
+    // store also into answers as a stable snapshot so progress counts it as answered when complete
+    const complete = Object.keys(doneMap).length === item.left.length;
+    STATE.answers[key] = complete ? JSON.stringify(doneMap) : "";
+  }
+
+  function pickMatch(sel){
+    // tap-to-match: first click left, then right
+    if(!STATE.pickedMatch){
+      STATE.pickedMatch = sel;
+      sel.el.classList.add("is-picked");
+      return;
+    }
+    const prev = STATE.pickedMatch;
+    // clear visuals
+    document.querySelectorAll(".hsk1__pair").forEach(n=>n.classList.remove("is-picked"));
+
+    if(prev.side === sel.side){
+      STATE.pickedMatch = sel; // replace selection
+      sel.el.classList.add("is-picked");
+      return;
+    }
+    const left = prev.side === "L" ? prev.value : sel.value;
+    const right = prev.side === "R" ? prev.value : sel.value;
+
+    doneMap[left] = right;
+    STATE.pickedMatch = null;
+    persist();
+    refresh();
+  }
+
+  box.appendChild(grid);
+  grid.appendChild(leftCol);
+  grid.appendChild(rightCol);
+
+  // clear
+  const clearBtn = el("button","hsk1__btn","Очистить пары");
+  clearBtn.type="button";
+  clearBtn.addEventListener("click", ()=>{
+    Object.keys(doneMap).forEach(k=>delete doneMap[k]);
+    STATE.pickedMatch = null;
+    persist();
+    refresh();
+  });
+  box.appendChild(el("div","hsk1__row"));
+  box.lastChild.appendChild(clearBtn);
+
+  persist();
+  refresh();
+  return box;
+}
+
+function renderReading(item){
+  const box = el("div");
+  box.appendChild(el("div","hsk1__textBox", `<b>${safeText(item.passageTitle||"Текст")}</b><br>${safeText(item.passage)}`));
+
+  item.questions.forEach((q, idx)=>{
+    const qWrap = el("div","hsk1__q");
+    qWrap.appendChild(el("div","hsk1__qTitle", `${idx+1}) ${safeText(q.q)}`));
+
+    const choices = el("div","hsk1__choices hsk1__choices--single");
+    const key = `${item.id}::${q.qid}`;
+
+    q.choices.forEach(ch=>{
+      const c = el("div","hsk1__choice");
+      c.innerHTML = `<div class="hsk1__choiceText">${safeText(ch.text)}</div>`;
+      if(STATE.answers[key] === ch.id) c.classList.add("is-selected");
+      c.addEventListener("click", ()=>{
+        STATE.answers[key] = ch.id;
+        choices.querySelectorAll(".hsk1__choice").forEach(n=>n.classList.remove("is-selected"));
+        c.classList.add("is-selected");
+        updateProgressUI();
+      });
+      choices.appendChild(c);
+    });
+
+    qWrap.appendChild(choices);
+    box.appendChild(qWrap);
+  });
+
+  return box;
+}
+
+function renderCloze(item){
+  const box = el("div");
+  box.appendChild(el("div","hsk1__desc", safeText(item.prompt)));
+
+  const row = el("div","hsk1__row");
+  item.blanks.forEach((b, idx)=>{
+    const key = `${item.id}::B${idx}`;
+    const placeholder = `Пропуск ${idx+1}…`;
+    const sel = createDropdown([
+      { value: "", label: placeholder },
+      ...b.options.map(o => ({ value:o, label:o }))
+    ], placeholder, STATE.answers[key] || "", (val)=>{
+      STATE.answers[key] = val || "";
+      // also update parent item answered flag
+      const allFilled = item.blanks.every((_,i)=> (STATE.answers[`${item.id}::B${i}`]||"") !== "");
+      STATE.answers[item.id] = allFilled ? "done" : "";
+      updateProgressUI();
+    });
+    row.appendChild(sel);
+  });
+  box.appendChild(row);
+
+  // initialize parent answered flag
+  const allFilled = item.blanks.every((_,i)=> (STATE.answers[`${item.id}::B${i}`]||"") !== "");
+  STATE.answers[item.id] = allFilled ? "done" : "";
+
+  return box;
+}
+
+/* ============================================================
+   7) Finish / scoring / result modal
+   ============================================================ */
+function wireFinish(){
+  document.getElementById("finishBtn").onclick = () => openResults();
+  document.getElementById("retryBtn").onclick = () => {
+    // reset state
+    STATE.answers = {};
+    STATE.attempts = {};
+    STATE.matches = {};
+    STATE.pickedToken = null;
+    STATE.pickedMatch = null;
+    closeModal();
+    render();
+    window.scrollTo({top:0, behavior:"smooth"});
+  };
+
+  document.querySelectorAll("[data-close-modal]").forEach(n=>{
+    n.onclick = () => closeModal();
+  });
+
+  // iOS/touch: block scrolling outside modal body
+  document.addEventListener("touchmove", function(e){
+    const mw = document.getElementById("hsk1Modal");
+    if(!mw.classList.contains("is-open")) return;
+    const body = document.getElementById("resultBody");
+    if(!body) return;
+    const t = e.target;
+    if(!body.contains(t)){
+      e.preventDefault();
+    }
+  }, { passive:false });
+}
+
+function openModal(){
+  const mw = document.getElementById("hsk1Modal");
+  mw.classList.add("is-open");
+  mw.setAttribute("aria-hidden","false");
+  document.body.classList.add("hsk1--modal-open");
+
+  // open from top + ensure scroll works
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    try { mw.scrollTop = 0; } catch(e){}
+    const body = document.getElementById("resultBody");
+    if(body) { try { body.scrollTop = 0; } catch(e){} }
+  }));
+}
+
+function closeModal(){
+  const mw = document.getElementById("hsk1Modal");
+  mw.classList.remove("is-open");
+  mw.setAttribute("aria-hidden","true");
+  document.body.classList.remove("hsk1--modal-open");
+}
+
+function openResults(){
+  const report = buildReport();
+  document.getElementById("resultSummary").innerHTML =
+    `Итог: <b>${report.totalScore}/100</b> • Listening ${report.bySkill.listening} • Reading ${report.bySkill.reading} • Grammar/Lexis ${report.bySkill.grammar}`;
+
+  const body = document.getElementById("resultBody");
+  body.innerHTML = "";
+
+  // score boxes
+  const scoreRow = el("div","hsk1__scoreRow");
+  scoreRow.appendChild(scoreBox("Общий балл", `${report.totalScore}/100`, report.stars));
+  scoreRow.appendChild(scoreBox("Listening", `${report.bySkill.listening}/40`, Math.round(report.bySkill.listening/4)));
+  scoreRow.appendChild(scoreBox("Reading", `${report.bySkill.reading}/35`, Math.round(report.bySkill.reading/4)));
+  scoreRow.appendChild(scoreBox("Grammar/Lexis", `${report.bySkill.grammar}/25`, Math.round(report.bySkill.grammar/4)));
+  body.appendChild(scoreRow);
+
+  body.appendChild(el("div","hsk1__hr"));
+
+  // level interpretation
+  body.appendChild(el("div","hsk1__textBox", `
+    <b>Интерпретация</b><br>
+    ${safeText(report.levelText)}
+  `));
+
+  // errors
+  body.appendChild(el("div","hsk1__hr"));
+  body.appendChild(el("div","hsk1__cardTitle","Ошибки и объяснения"));
+
+  if(report.errors.length === 0){
+    body.appendChild(el("div","hsk1__desc","Ошибок нет. Отличный результат."));
+  } else {
+    report.errors.forEach(err=>{
+      const card = el("div","hsk1__errCard");
+      card.innerHTML = `
+        <div class="hsk1__errTop">
+          <div class="hsk1__errTitle">${safeText(err.sectionTitle)}</div>
+          <div class="hsk1__badgeBad">ошибка</div>
+        </div>
+        <div class="hsk1__kv">
+          <div><b>Задание:</b> ${safeText(err.task)}</div>
+          <div><b>Ваш ответ:</b> ${safeText(err.user)}</div>
+          <div><b>Правильно:</b> ${safeText(err.correct)}</div>
+        </div>
+        <div class="hsk1__rule"><b>Пояснение:</b> ${safeText(err.rule)}</div>
+      `;
+      body.appendChild(card);
+    });
+  }
+
+  openModal();
+}
+
+function scoreBox(label, value, starsCount){
+  const box = el("div","hsk1__scoreBox");
+  box.appendChild(el("div","hsk1__scoreLabel", safeText(label)));
+  box.appendChild(el("div","hsk1__scoreValue", safeText(value)));
+
+  const stars = el("div","hsk1__stars");
+  const on = Math.max(0, Math.min(10, Number(starsCount||0)));
+  for(let i=1;i<=10;i++){
+    const s = el("span","hsk1__star"+(i<=on?" is-on":""));
+    s.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="${i<=on ? "#111827" : "#cbd5e1"}" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+      </svg>
+    `;
+    stars.appendChild(s);
+  }
+  box.appendChild(stars);
+
+  // simple animation: stagger
+  requestAnimationFrame(()=>{
+    [...stars.children].forEach((st, idx)=>{
+      if(st.classList.contains("is-on")){
+        st.style.transitionDelay = (idx*35)+"ms";
+      }
+    });
+  });
+
+  return box;
+}
+
+function buildReport(){
+  // Evaluate each item, compute weighted section scores, normalize to 100.
+  const errors = [];
+
+  let listeningRaw = { correct:0, total:0 };
+  let readingRaw = { correct:0, total:0 };
+  let grammarRaw = { correct:0, total:0 };
+
+  TEST.sections.forEach(sec=>{
+    sec.items.forEach(item=>{
+      if(item.type === "listening_choice"){
+        const k = item.id;
+        const user = STATE.answers[k];
+        listeningRaw.total++;
+        if(user === item.correct) listeningRaw.correct++;
+        else {
+          errors.push({
+            sectionTitle: sec.title,
+            task: item.prompt,
+            user: user || "—",
+            correct: item.correct,
+            rule: item.rule || "—"
+          });
+        }
+      }
+
+      if(item.type === "fill_dropdown"){
+        const k = item.id;
+        const user = STATE.answers[k];
+        grammarRaw.total++;
+        if(user === item.correct) grammarRaw.correct++;
+        else {
+          errors.push({
+            sectionTitle: sec.title,
+            task: item.prompt,
+            user: user || "—",
+            correct: item.correct,
+            rule: item.rule || "—"
+          });
+        }
+      }
+
+      if(item.type === "order_drag"){
+        const k = item.id;
+        const userArr = Array.isArray(STATE.answers[k]) ? STATE.answers[k] : [];
+        const user = userArr.filter(Boolean).join(" ");
+        const corr = item.correct.join(" ");
+        grammarRaw.total++;
+        const ok = userArr.length === item.correct.length && userArr.every((v,i)=>v===item.correct[i]);
+        if(ok) grammarRaw.correct++;
+        else {
+          errors.push({
+            sectionTitle: sec.title,
+            task: item.prompt,
+            user: user || "—",
+            correct: corr,
+            rule: item.rule || "—"
+          });
+        }
+      }
+
+      if(item.type === "match_pairs"){
+        const k = item.id;
+        const map = STATE.matches[k] || {};
+        // count as 1 task (all pairs)
+        grammarRaw.total++;
+        let ok = true;
+        item.left.forEach(l=>{
+          if(map[l] !== item.correctMap[l]) ok = false;
+        });
+        if(ok && Object.keys(map).length === item.left.length) grammarRaw.correct++;
+        else {
+          errors.push({
+            sectionTitle: sec.title,
+            task: item.prompt,
+            user: Object.keys(map).length ? JSON.stringify(map) : "—",
+            correct: JSON.stringify(item.correctMap),
+            rule: item.rule || "—"
+          });
+        }
+      }
+
+      if(item.type === "reading_mcq"){
+        item.questions.forEach(q=>{
+          const k = `${item.id}::${q.qid}`;
+          const user = STATE.answers[k];
+          readingRaw.total++;
+          if(user === q.correct) readingRaw.correct++;
+          else {
+            errors.push({
+              sectionTitle: sec.title,
+              task: q.q,
+              user: user || "—",
+              correct: q.correct,
+              rule: q.rule || "—"
+            });
+          }
+        });
+      }
+
+      if(item.type === "cloze_dropdown"){
+        // treat as grammar task: all blanks correct => 1
+        grammarRaw.total++;
+        let ok = true;
+        const userParts = [];
+        const corrParts = [];
+        item.blanks.forEach((b, idx)=>{
+          const k = `${item.id}::B${idx}`;
+          const user = STATE.answers[k] || "";
+          userParts.push(user || "—");
+          corrParts.push(b.correct);
+          if(user !== b.correct) ok = false;
+        });
+        if(ok) grammarRaw.correct++;
+        else {
+          errors.push({
+            sectionTitle: sec.title,
+            task: item.prompt,
+            user: userParts.join(" / "),
+            correct: corrParts.join(" / "),
+            rule: item.rule || "—"
+          });
+        }
+      }
+    });
+  });
+
+  // Convert raw to HSK-like subscores:
+  // Listening: 40 points
+  // Reading: 35 points
+  // Grammar/Lexis: 25 points
+  const listeningScore = listeningRaw.total ? Math.round((listeningRaw.correct/listeningRaw.total)*40) : 0;
+  const readingScore = readingRaw.total ? Math.round((readingRaw.correct/readingRaw.total)*35) : 0;
+  const grammarScore = grammarRaw.total ? Math.round((grammarRaw.correct/grammarRaw.total)*25) : 0;
+
+  let totalScore = listeningScore + readingScore + grammarScore;
+  totalScore = Math.max(0, Math.min(100, totalScore));
+
+  const stars = Math.round(totalScore/10);
+
+  let levelText = "";
+  if(totalScore < 40) levelText = "Ниже HSK1: рекомендуется повторить базовую лексику/грамматику и больше слушать простые диалоги.";
+  else if(totalScore < 60) levelText = "Пограничный уровень (HSK1): вы частично готовы к HSK1, нужно укрепить слушание и чтение.";
+  else if(totalScore < 75) levelText = "Близко к HSK1: вероятно, вы на уровне HSK1, но есть пробелы. Добейте слабые темы.";
+  else if(totalScore < 90) levelText = "Уверенный HSK1: хороший результат, можно начинать готовиться к HQC2.";
+  else levelText = "Очень сильный HSK1: высокая готовность, можно переходить к HQC2.";
+
+    return {
+    totalScore,
+    stars,
+    levelText, // <-- ВОТ ЭТОГО НЕ ХВАТАЛО
+    bySkill: { listening: listeningScore, reading: readingScore, grammar: grammarScore },
+    errors
+  };
+}
+
+/* ============================================================
+   8) Progress UI
+   ============================================================ */
+function updateProgressUI(){
+  const p = computeProgress();
+  document.getElementById("progressFill").style.width = p.pct + "%";
+  document.getElementById("progressText").textContent = p.pct + "%";
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+render();
+</script>
