@@ -2,7 +2,7 @@
   <div class="hsk2__shell">
     <header class="hsk2__head">
       <div class="hsk2__brand">
-        <div class="hsk2__logo">HSK2</div>
+        <div class="hsk2__logo">HQC1</div>
         <div class="hsk2__meta">
           <div class="hsk2__title">Интерактивный диагностический тест</div>
           <div class="hsk2__subtitle">Аудирование, чтение и грамматика</div>
@@ -667,26 +667,30 @@
 const ASSETS = {
   // Public placeholder audio (NOT Chinese). Replace with your own mp3.
   audio: {
-    L1: "https://raw.githubusercontent.com/ChinaChild25/audio/main/What%20does%20he%20drink.mp3",
-    L2: "https://raw.githubusercontent.com/ChinaChild25/audio/main/What%20does%20he%20want.mp3",
-    L3: "https://raw.githubusercontent.com/ChinaChild25/audio/main/Where%20do%20they%20go%20tomorrow.mp3",
-    L4: "https://raw.githubusercontent.com/ChinaChild25/audio/main/Where%20is%20he%20going.mp3",
-    L5: "https://raw.githubusercontent.com/ChinaChild25/audio/main/Where%20is%20she.mp3"
+    L1: "https://raw.githubusercontent.com/ChinaChild25/audio/main/What%20does%20she%20like.mp3",
+    L2: "https://raw.githubusercontent.com/ChinaChild25/audio/main/Where%20is%20the%20book.mp3",
+    L3: "https://raw.githubusercontent.com/ChinaChild25/audio/main/What%20does%20he%20eat.mp3",
+    L4: "https://raw.githubusercontent.com/ChinaChild25/audio/main/Where%20do%20they%20go%20today.mp3",
+    L5: "https://raw.githubusercontent.com/ChinaChild25/audio/main/Who%20is%20she.mp3"
   },
   // Public placeholder images (stable generic). Replace with your own jpg/png.
   images: {
-    tea: "https://avatars.mds.yandex.net/i?id=3c630ffa1de3f78e9ccea159c0584829_l-17993967-images-thumbs&n=13",
-    water: "https://t3.ftcdn.net/jpg/09/12/78/70/360_F_912787098_4ZlQRleteyw49Bh3EoK2HVAH26s4x6qp.jpg",
-    rice: "https://img.freepik.com/free-photo/top-view-raw-rice-with-sticks-inside-plate-dark-desk_179666-27237.jpg?semt=ais_hybrid&w=740",
-    school: "https://avatars.mds.yandex.net/i?id=b33d477200387fbe8c80e2601767501a190fbc7c-4809761-images-thumbs&n=13",
-    home: "https://i.pinimg.com/originals/d3/b2/d2/d3b2d2eca269f807f2d93d682e95000d.jpg",
-    china: "https://i.pinimg.com/originals/c6/56/3a/c6563a0ed1dde4a3ff8957f49dbb9fc4.jpg"
+    apple: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=600&q=80",
+    rice: "https://images.unsplash.com/photo-1604908554025-e4773e38c8e2?auto=format&fit=crop&w=600&q=80",
+    milk: "https://images.unsplash.com/photo-1585238342028-4e3d1b7b3da7?auto=format&fit=crop&w=600&q=80",
+    book: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80",
+    bus: "https://images.unsplash.com/photo-1509749837427-ac94a2553d0e?auto=format&fit=crop&w=600&q=80",
+    park: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80",
+    friend: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
+    home: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80",
+    school: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80",
+    teacher: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80",
+    student: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80"
   },
   // Public placeholder video (optional). Replace with your own mp4 link.
   video: {
     intro: "https://static.tildacdn.com/vide6631-3137-4330-a338-656639363931/Chinachild.mp4",
-    introEmbedUrl: "https://share.synthesia.io/embeds/videos/d8f3064d-bdc9-4c7e-9684-94353ad0d8c1",
-    introPreviewUrl: "https://static.tildacdn.com/tild6631-3137-4330-a338-656639363931/Chinachild_preview.jpg"
+    introEmbed: `<div style="position: relative; overflow: hidden; aspect-ratio: 1920/1080"><iframe src="https://share.synthesia.io/embeds/videos/6e8ff087-fe05-412d-9e9d-055258960200" loading="lazy" title="Synthesia video player - HQC1" allowfullscreen allow="encrypted-media; fullscreen; microphone; screen-wake-lock;" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0; margin: 0; overflow:hidden;"></iframe></div>`
   }
 };
 
@@ -695,7 +699,7 @@ const ASSETS = {
    Replace texts later, keep IDs consistent.
    ============================================================ */
 const TEST = {
-  meta: { title: "HSK2 Diagnostic", version: "1.0", totalPoints: 100 },
+  meta: { title: "HQC1 Diagnostic", version: "1.0", totalPoints: 100 },
   sections: [
     {
       id: "S1",
@@ -706,67 +710,67 @@ const TEST = {
         {
           id: "L1Q1",
           type: "listening_choice",
-          prompt: "Что он пьёт?",
+          prompt: "Что она любит?",
           audioKey: "L1",
           choices: [
-            { id:"A", text:"茶 (чай)", img:"tea" },
-            { id:"B", text:"水 (вода)", img:"water" },
-            { id:"C", text:"米饭 (рис)", img:"rice" }
+            { id:"A", text:"苹果 (яблоко)", img:"apple" },
+            { id:"B", text:"牛奶 (молоко)", img:"milk" },
+            { id:"C", text:"书 (книга)", img:"book" }
           ],
           correct: "A",
-          rule: "Лексика: 匹配 «пить» + напиток."
+          rule: "喜欢 + объект: «нравится/любить»."
         },
         {
           id: "L1Q2",
           type: "listening_choice",
-          prompt: "Куда он идёт утром?",
+          prompt: "Где книга?",
           audioKey: "L2",
           choices: [
-            { id:"A", text:"在家 (дома)", img:"home" },
-            { id:"B", text:"学校 (школа)", img:"school" },
-            { id:"C", text:"中国 (Китай)", img:"china" }
-          ],
-          correct: "B",
-          rule: "Понимание ключевого слова: 学校."
-        },
-        {
-          id: "L1Q3",
-          type: "listening_choice",
-          prompt: "Где она сейчас?",
-          audioKey: "L3",
-          choices: [
-            { id:"A", text:"在学校", img:"school" },
-            { id:"B", text:"在家", img:"home" },
-            { id:"C", text:"在中国", img:"china" }
+            { id:"A", text:"在学校 (в школе)", img:"school" },
+            { id:"B", text:"在家 (дома)", img:"home" },
+            { id:"C", text:"在公园 (в парке)", img:"park" }
           ],
           correct: "B",
           rule: "在 + место: «находиться где-то»."
         },
         {
-          id: "L1Q4",
+          id: "L1Q3",
           type: "listening_choice",
-          prompt: "Что он хочет?",
-          audioKey: "L4",
+          prompt: "Что он ест?",
+          audioKey: "L3",
           choices: [
-            { id:"A", text:"想喝水", img:"water" },
-            { id:"B", text:"想去学校", img:"school" },
-            { id:"C", text:"想吃米饭", img:"rice" }
+            { id:"A", text:"米饭 (рис)", img:"rice" },
+            { id:"B", text:"苹果 (яблоко)", img:"apple" },
+            { id:"C", text:"牛奶 (молоко)", img:"milk" }
           ],
           correct: "A",
-          rule: "想 + V: «хотеть сделать»."
+          rule: "动词 «吃» + еда."
+        },
+        {
+          id: "L1Q4",
+          type: "listening_choice",
+          prompt: "Куда они едут сегодня?",
+          audioKey: "L4",
+          choices: [
+            { id:"A", text:"今天去公园", img:"park" },
+            { id:"B", text:"今天去学校", img:"school" },
+            { id:"C", text:"今天在家", img:"home" }
+          ],
+          correct: "A",
+          rule: "时间 + 去 + 地点."
         },
         {
           id: "L1Q5",
           type: "listening_choice",
-          prompt: "Куда они едут завтра?",
+          prompt: "Кто это?",
           audioKey: "L5",
           choices: [
-            { id:"A", text:"明天去中国", img:"china" },
-            { id:"B", text:"明天在家", img:"home" },
-            { id:"C", text:"明天去学校", img:"school" }
+            { id:"A", text:"朋友 (друг)", img:"friend" },
+            { id:"B", text:"老师 (учитель)", img:"teacher" },
+            { id:"C", text:"学生 (студент)", img:"student" }
           ],
           correct: "A",
-          rule: "时间 + 去 + 地点."
+          rule: "Кто это? 基本词汇."
         }
       ]
     },
@@ -780,24 +784,24 @@ const TEST = {
         {
           id: "G1",
           type: "fill_dropdown",
-          prompt: "我 ___ 喜欢 茶。",
-          options: ["不", "很", "在"],
-          correct: "很",
-          rule: "很 + 喜欢: «очень нравится»."
+          prompt: "我 ___ 学生。",
+          options: ["是", "在", "有"],
+          correct: "是",
+          rule: "是 = связка «быть»."
         },
         {
           id: "G2",
           type: "fill_dropdown",
-          prompt: "他 ___ 学校。",
-          options: ["在", "要", "不"],
+          prompt: "她 ___ 北京。",
+          options: ["在", "去", "喝"],
           correct: "在",
           rule: "在 + место: «находиться где-то»."
         },
         {
           id: "G3",
           type: "fill_dropdown",
-          prompt: "我 明天 ___ 中国。",
-          options: ["去", "在", "喝"],
+          prompt: "我们 ___ 公园。",
+          options: ["去", "有", "不"],
           correct: "去",
           rule: "去 + 地点: «идти/ехать куда-то»."
         }
@@ -813,20 +817,20 @@ const TEST = {
         {
           id: "D1",
           type: "order_drag",
-          prompt: "Соберите: «Мы завтра идём в Китай»",
-          tokens: ["我们", "明天", "去", "中国"],
-          slots: 4,
-          correct: ["我们", "明天", "去", "中国"],
-          rule: "Базовый порядок: подлежащее + время + сказуемое + дополнение."
+          prompt: "Соберите: «Я люблю молоко»",
+          tokens: ["我", "喜欢", "牛奶"],
+          slots: 3,
+          correct: ["我", "喜欢", "牛奶"],
+          rule: "喜欢 + объект: «нравится/любить»."
         },
         {
           id: "D2",
           type: "order_drag",
-          prompt: "Соберите: «Она любит чай»",
-          tokens: ["她", "喜欢", "茶"],
-          slots: 3,
-          correct: ["她", "喜欢", "茶"],
-          rule: "喜欢 + объект: «нравится/любить (что)»."
+          prompt: "Соберите: «Он сегодня в школе»",
+          tokens: ["他", "今天", "在", "学校"],
+          slots: 4,
+          correct: ["他", "今天", "在", "学校"],
+          rule: "Порядок: подлежащее + время + 在 + место."
         }
       ]
     },
@@ -841,9 +845,9 @@ const TEST = {
           id: "M1",
           type: "match_pairs",
           prompt: "Сопоставьте слово и перевод",
-          left: ["水", "茶", "学校", "家"],
-          right: ["чай", "вода", "дом", "школа"],
-          correctMap: { "水":"вода", "茶":"чай", "学校":"школа", "家":"дом" },
+          left: ["苹果", "牛奶", "老师", "朋友"],
+          right: ["учитель", "молоко", "яблоко", "друг"],
+          correctMap: { "苹果":"яблоко", "牛奶":"молоко", "老师":"учитель", "朋友":"друг" },
           rule: "Лексические пары: запоминать как соответствия."
         }
       ]
@@ -859,29 +863,29 @@ const TEST = {
           id: "R1",
           type: "reading_mcq",
           passageTitle: "短文",
-          passage: "我叫王明。我住在北京。我今天不去学校，在家学习。我喜欢喝茶。",
+          passage: "我叫小丽。我住在上海。我今天去学校。我喜欢看书。",
           questions: [
             {
               qid: "R1Q1",
-              q: "他今天去哪儿？",
+              q: "她今天去哪儿？",
               choices: [
                 {id:"A", text:"去学校"},
                 {id:"B", text:"在家"},
-                {id:"C", text:"去中国"}
+                {id:"C", text:"去公园"}
               ],
-              correct: "B",
-              rule: "文本中 прямое указание: «在家学习»."
+              correct: "A",
+              rule: "文本: «我今天去学校»."
             },
             {
               qid: "R1Q2",
-              q: "他喜欢喝什么？",
+              q: "她喜欢什么？",
               choices: [
-                {id:"A", text:"茶"},
-                {id:"B", text:"水"},
-                {id:"C", text:"米饭"}
+                {id:"A", text:"看书"},
+                {id:"B", text:"喝水"},
+                {id:"C", text:"吃米饭"}
               ],
               correct: "A",
-              rule: "文本: «我喜欢喝茶»."
+              rule: "文本: «我喜欢看书»."
             }
           ]
         }
@@ -897,12 +901,12 @@ const TEST = {
         {
           id: "C1",
           type: "cloze_dropdown",
-          prompt: "我 ___ 中国人。 我 ___ 北京。",
+          prompt: "我 ___ 中国人。 我 ___ 北京学习。",
           blanks: [
             { options: ["是", "在", "有"], correct: "是" },
-            { options: ["住在", "喜欢", "去"], correct: "住在" }
+            { options: ["在", "去", "喜欢"], correct: "在" }
           ],
-          rule: "是 = связка «быть». 住在 = «жить (в)»."
+          rule: "是 = связка «быть». 在 = «находиться/быть в»."
         }
       ]
     }
@@ -1057,7 +1061,7 @@ function loadVideoEmbed(placeholder){
   }
   const iframe = document.createElement("iframe");
   iframe.src = embedUrl;
-  iframe.title = "HSK2 video";
+  iframe.title = "HQC1 video";
   iframe.allowFullscreen = true;
   iframe.allow = "encrypted-media; fullscreen; microphone;";
   frame.appendChild(iframe);
@@ -1093,8 +1097,20 @@ function initLazyVideoEmbeds(){
 
 function buildIntroVideoHtml(video){
   if(!video) return "";
+  const embedRaw = typeof video.introEmbed === "string" ? video.introEmbed.trim() : "";
   const embedUrl = typeof video.introEmbedUrl === "string" ? video.introEmbedUrl.trim() : "";
   const previewUrl = typeof video.introPreviewUrl === "string" ? video.introPreviewUrl.trim() : "";
+  if(embedRaw){
+    if(/^https?:\/\//i.test(embedRaw)){
+      return `
+        <div class="hsk2__videoEmbed">
+          <div class="hsk2__videoFrame">
+            <iframe src="${embedRaw}" loading="lazy" title="HQC1 video" allowfullscreen allow="encrypted-media; fullscreen; microphone;"></iframe>
+          </div>
+        </div>`;
+    }
+    return `<div class="hsk2__videoEmbed">${embedRaw}</div>`;
+  }
   if(embedUrl){
     const posterStyle = previewUrl ? ` style="background-image: url('${previewUrl}');"` : "";
     const emptyClass = previewUrl ? "" : " is-empty";
@@ -1982,11 +1998,11 @@ function buildReport(){
   const stars = Math.round(totalScore/10);
 
   let levelText = "";
-  if(totalScore < 40) levelText = "Ниже HSK2: рекомендуется повторить базовую лексику/грамматику HSK1–2 и больше listening.";
-  else if(totalScore < 60) levelText = "Пограничный уровень (HSK1–2): вы частично готовы к HSK2, нужно укрепить listening/reading.";
-  else if(totalScore < 75) levelText = "Близко к HSK2: вероятно, вы на уровне HSK2, но есть пробелы. Добейте слабые темы.";
-  else if(totalScore < 90) levelText = "Уверенный HSK2: хороший результат, можно начинать готовиться к HSK3.";
-  else levelText = "Очень сильный HSK2: высокая готовность, можно переходить к HSK3.";
+  if(totalScore < 40) levelText = "Ниже HQC1: рекомендуется повторить базовую лексику/грамматику и больше слушать простые диалоги.";
+  else if(totalScore < 60) levelText = "Пограничный уровень (HQC1): вы частично готовы к HQC1, нужно укрепить слушание и чтение.";
+  else if(totalScore < 75) levelText = "Близко к HQC1: вероятно, вы на уровне HQC1, но есть пробелы. Добейте слабые темы.";
+  else if(totalScore < 90) levelText = "Уверенный HQC1: хороший результат, можно начинать готовиться к HQC2.";
+  else levelText = "Очень сильный HQC1: высокая готовность, можно переходить к HQC2.";
 
     return {
     totalScore,
