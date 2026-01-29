@@ -180,7 +180,7 @@
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: 14px;
+    border-radius: 1px;
     border: 1px solid #eef0f6;
     overflow: hidden;
     background: #0b0b0f;
@@ -667,11 +667,11 @@
 const ASSETS = {
   // Public placeholder audio (NOT Chinese). Replace with your own mp3.
   audio: {
-    L1: "https://raw.githubusercontent.com/ChinaChild25/audio/main/What%20does%20she%20like.mp3",
-    L2: "https://raw.githubusercontent.com/ChinaChild25/audio/main/Where%20is%20the%20book.mp3",
-    L3: "https://raw.githubusercontent.com/ChinaChild25/audio/main/What%20does%20he%20eat.mp3",
-    L4: "https://raw.githubusercontent.com/ChinaChild25/audio/main/Where%20do%20they%20go%20today.mp3",
-    L5: "https://raw.githubusercontent.com/ChinaChild25/audio/main/Who%20is%20she.mp3"
+    L1: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/What%20does%20she%20love%3F.mp3",
+    L2: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/Where%20is%20the%20book%3F.mp3",
+    L3: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/What%20does%20he%20eat%3F.mp3",
+    L4: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/Where%20do%20they%20drive%20today%3F.mp3",
+    L5: "https://raw.githubusercontent.com/ChinaChild25/HSK1-Interactive-test/main/Who%20is%20it%3F.mp3"
   },
   // Public placeholder images (stable generic). Replace with your own jpg/png.
   images: {
@@ -690,7 +690,7 @@ const ASSETS = {
   // Public placeholder video (optional). Replace with your own mp4 link.
   video: {
     intro: "https://static.tildacdn.com/vide6631-3137-4330-a338-656639363931/Chinachild.mp4",
-    introEmbed: `<div style="position: relative; overflow: hidden; aspect-ratio: 1920/1080"><iframe src="https://share.synthesia.io/embeds/videos/6e8ff087-fe05-412d-9e9d-055258960200" loading="lazy" title="Synthesia video player - HSK1" allowfullscreen allow="encrypted-media; fullscreen; microphone; screen-wake-lock;" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0; margin: 0; overflow:hidden;"></iframe></div>`
+    introEmbed: `<div style="position: relative; overflow: hidden; aspect-ratio: 1920/1080"><iframe src="https://share.synthesia.io/embeds/videos/6e8ff087-fe05-412d-9e9d-055258960200" loading="lazy" title="Synthesia video player - HSK1" allowfullscreen allow="encrypted-media; fullscreen; microphone; screen-wake-lock;" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-radius: 10px; padding: 0; margin: 0; overflow:hidden;"></iframe></div>`
   }
 };
 
